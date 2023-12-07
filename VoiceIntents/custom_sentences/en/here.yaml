@@ -1,0 +1,40 @@
+language: "en"
+intents:
+  HereGetTemperature:
+    data:
+      - sentences:
+          - "<what_is> [the] <temp> [in here]"
+  HereGetHumidity:
+    data:
+      - sentences:
+          - "<what_is> [the] humidity [in here]"
+  HereSetVolume:
+    data:
+      - sentences:
+          - "<numeric_value_set> [the] volume [to] {volume} [percent]"
+  HereVolumeUp:
+    data:
+      - sentences:
+          - "(set|change|turn) [the] volume up [in here]"
+          - "volume up [in here]"
+          - "increase [the] volume [in here]"
+  HereVolumeDown:
+    data:
+      - sentences:
+          - "(set|change|turn) [the] volume down [in here]"
+          - "volume down [in here]"
+          - "decrease [the] volume [in here]"
+  HereMuteVolume:
+    data:
+      - sentences:
+          - "mute [in here]"
+          - "quiet [in here]"
+  HereUnmuteVolume:
+    data:
+      - sentences:
+          - "unmute [in here]"
+lists:
+  volume:
+    range:
+      from: 0
+      to: 100

@@ -1,0 +1,262 @@
+language: "en"
+intents:
+  GetTime:
+    data:
+      - sentences:
+          - "<what_is> [the] time"
+  StartTimer:
+    data:
+      - sentences:
+          - "(set|start) [(the|a|an)] ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s]"
+      - sentences:
+          - "(set|start) [(the|a|an)] ({spelled_numbers:hours}|{hours}) hour[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:hours}|{hours}) hour[s]"
+        slots:
+          domain: "timer"
+          seconds: 0
+          minutes: 0
+      - sentences:
+          - "(set|start) [(the|a|an)] ({spelled_numbers:minutes}|{minutes}) minute[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:minutes}|{minutes}) minute[s]"
+        slots:
+          domain: "timer"
+          seconds: 0
+          hours: 0
+      - sentences:
+          - "(set|start) [(the|a|an)] ({spelled_numbers:seconds}|{seconds}) second[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:seconds}|{seconds}) second[s]"
+        slots:
+          domain: "timer"
+          minutes: 0
+          hours: 0
+      - sentences:
+          - "(set|start) [(the|a|an)] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s]"
+        slots:
+          domain: "timer"
+          hours: 0
+      - sentences:
+          - "(set|start) [(the|a|an)] ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s]"
+        slots:
+          domain: "timer"
+          seconds: 0
+      - sentences:
+          - "(set|start) [(the|a|an)] ({spelled_numbers:minutes}|{minutes}) minute[s] and [a] half timer"
+          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:minutes}|{minutes}) minute[s] and [a] half"
+          - "(set|start) [(the|a|an)] ({spelled_numbers:minutes}|{minutes}) and [a] half minute[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:minutes}|{minutes}) and [a] half minute[s]"
+        slots:
+          domain: "timer"
+          seconds: 30
+          hours: 0
+      - sentences:
+          - "(set|start) [(the|a|an)] ({spelled_numbers:hours}|{hours}) hour[s] and [a] half timer"
+          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:hours}|{hours}) hour[s] and [a] half"
+          - "(set|start) [(the|a|an)] ({spelled_numbers:hours}|{hours}) and [a] half hour[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:hours}|{hours}) and [a] half hour[s]"
+        slots:
+          domain: "timer"
+          seconds: 0
+          minutes: 30
+  CancelTimer:
+    data:
+      - sentences:
+          - "(cancel|stop) (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+  AddToTimer:
+    data:
+      - sentences:
+          - "add ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] [to] (timer {entity_id}|{entity_id} timer)"
+      - sentences:
+          - "add ({spelled_numbers:hours}|{hours}) hour[s] [to] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          seconds: 0
+          minutes: 0
+      - sentences:
+          - "add ({spelled_numbers:minutes}|{minutes}) minute[s] [to] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          seconds: 0
+          hours: 0
+      - sentences:
+          - "add ({spelled_numbers:seconds}|{seconds}) second[s] [to] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          minutes: 0
+          hours: 0
+      - sentences:
+          - "add ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] [to] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          hours: 0
+      - sentences:
+          - "add ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [to] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          seconds: 0
+      - sentences:
+          - "add ({spelled_numbers:minutes}|{minutes}) minute[s] and [a] half [to] (timer {entity_id}|{entity_id} timer)"
+          - "add ({spelled_numbers:minutes}|{minutes}) and [a] half minute[s] [to] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          seconds: 30
+          hours: 0
+      - sentences:
+          - "add ({spelled_numbers:hours}|{hours}) hour[s] and [a] half [to] (timer {entity_id}|{entity_id} timer)"
+          - "add ({spelled_numbers:hours}|{hours}) and [a] half hour[s] [to] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          seconds: 0
+          minutes: 30
+  RemoveFromTimer:
+    data:
+      - sentences:
+          - "(remove|subtract) ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] [from] (timer {entity_id}|{entity_id} timer)"
+      - sentences:
+          - "(remove|subtract) ({spelled_numbers:hours}|{hours}) hour[s] [from] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          seconds: 0
+          minutes: 0
+      - sentences:
+          - "(remove|subtract) ({spelled_numbers:minutes}|{minutes}) minute[s] [from] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          seconds: 0
+          hours: 0
+      - sentences:
+          - "(remove|subtract) ({spelled_numbers:seconds}|{seconds}) second[s] [from] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          minutes: 0
+          hours: 0
+      - sentences:
+          - "(remove|subtract) ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] [from] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          hours: 0
+      - sentences:
+          - "(remove|subtract) ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [from] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          seconds: 0
+      - sentences:
+          - "(remove|subtract) ({spelled_numbers:minutes}|{minutes}) minute[s] and [a] half [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) ({spelled_numbers:minutes}|{minutes}) and [a] half minute[s] [from] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          seconds: 30
+          hours: 0
+      - sentences:
+          - "(remove|subtract) ({spelled_numbers:hours}|{hours}) hour[s] and [a] half [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) ({spelled_numbers:hours}|{hours}) and [a] half hour[s] [from] (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+          seconds: 0
+          minutes: 30
+  PauseTimer:
+    data:
+      - sentences:
+          - "pause (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+  ResumeTimer:
+    data:
+      - sentences:
+          - "resume (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+  ListTimers:
+    data:
+      - sentences:
+          - "list [my] timers"
+          - "<what_is> my timers"
+        slots:
+          domain: "timer"
+  GetTimer:
+    data:
+      - sentences:
+          - "[how much] time [is] left on (timer {entity_id}|{entity_id} timer)"
+          - "<what_is> (timer {entity_id}|{entity_id} timer)"
+        slots:
+          domain: "timer"
+  SetWakeUpAlarmTime:
+    data:
+      - sentences:
+          - "wake me up at {hours} {minutes} [in the] {ampm}"
+          - "set [my] alarm (at|for) {hours} {minutes} [in the] {ampm}"
+      - sentences:
+          - "wake me up at {hours} {minutes}"
+          - "set [my] alarm (at|for) {hours} {minutes}"
+        slots:
+          ampm: "AM"
+      - sentences:
+          - "wake me up at {hours} [in the] {ampm}"
+          - "set [my] alarm (at|for) {hours} [in the] {ampm}"
+        slots:
+          minutes: 0
+      - sentences:
+          - "wake me up at {hours}"
+          - "set [my] alarm (at|for) {hours}"
+        slots:
+          minutes: 0
+          ampm: "AM"
+  CancelWakeUpAlarm:
+    data:
+      - sentences:
+          - "(cancel|stop) [my] alarm"
+  IsWakeUpAlarmSet:
+    data:
+      - sentences:
+          - "is [my] alarm (set|active)"
+lists:
+  entity_id:
+    values:
+      - in: "(one|1|first|1st|A)"
+        out: "timer.timer1"
+      - in: "(two|2|second|2nd|B)"
+        out: "timer.timer2"
+      - in: "(three|3|third|3rd|C)"
+        out: "timer.timer3"
+  seconds:
+    range:
+      from: 0
+      to: 59
+  minutes:
+    range:
+      from: 0
+      to: 59
+  hours:
+    range:
+      from: 0
+      to: 24
+  ampm:
+    values:
+      - in: "(am|a.m|a.m.|morning)"
+        out: "AM"
+      - in: "(pm|p.m|p.m.|afternoon|evening)"
+        out: "PM"
+  spelled_numbers:
+    values:
+      - in: one
+        out: 1
+      - in: two
+        out: 2
+      - in: three
+        out: 3
+      - in: four
+        out: 4
+      - in: five
+        out: 5
+      - in: six
+        out: 6
+      - in: seven
+        out: 7
+      - in: eight
+        out: 8
+      - in: nine
+        out: 9

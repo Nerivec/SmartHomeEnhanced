@@ -1,0 +1,6 @@
+language: "en"
+intents:
+  ReportClimate:
+    data:
+      - sentences:
+          - "<what_is> the house climate"

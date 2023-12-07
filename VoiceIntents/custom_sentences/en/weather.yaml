@@ -1,0 +1,15 @@
+language: "en"
+intents:
+  GetWeather:
+    data:
+      - sentences:
+          - "<what_is>[ the] weather"
+  GetForecast:
+    data:
+      - sentences:
+          - "<what_is>[ the] forecast"
+  GetForecastTomorrow:
+    data:
+      - sentences:
+          - "<what_is>[ the] forecast [for] tomorrow"
+          - "<what_is> tomorrow's forecast"

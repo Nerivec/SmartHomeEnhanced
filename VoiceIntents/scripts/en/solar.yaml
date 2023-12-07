@@ -1,0 +1,17 @@
+voice_get_current_solar_production:
+  alias: Voice - Get Current Solar Production
+  sequence:
+  - variables:
+      result:
+        text: >-
+          {%- set solar = states('sensor.solar_power_meter_power') | float %}
+          {%- set forecast = states('sensor.power_production_now') | float %}
+          {%- if solar > 0 %}
+            Current solar production is at {{ ((solar / 660.0) * 100.0) | round(0) }}%, {{ solar | round(0) }} watts. {{ (solar / forecast) | round(0) }}% of forecast.
+          {%- else %}
+            Panels are not currently producing.
+          {%- endif %}
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:solar-power

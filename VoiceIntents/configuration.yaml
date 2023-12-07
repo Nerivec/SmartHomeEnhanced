@@ -1,0 +1,290 @@
+intent_script:
+  HereGetTemperature:
+    speech:
+      text: |-
+        {% set entity_id = expand(area_entities(area_name(states('input_text.last_voice_box_triggered')))) | selectattr('attributes.device_class', 'eq', 'temperature') | map(attribute='entity_id') | first %}
+        {% if entity_id %}
+          {{ ["Temperature is", "It's"] | random }} {{ states(entity_id) | float | round(1) }}° in here.
+        {% elif has_value("sensor.mean_house_temperature") %}
+          Mean temperature for the house is {{ states("sensor.mean_house_temperature") | float | round(1) }}°.
+        {% endif %}
+  HereGetHumidity:
+    speech:
+      text: |-
+        {% set entity_id = expand(area_entities(area_name(states('input_text.last_voice_box_triggered')))) | selectattr('attributes.device_class', 'eq', 'humidity') | map(attribute='entity_id') | first %}
+        {% if entity_id %}
+          Humidity is {{ states(entity_id) | float | round(0) }}% in here.
+        {% elif has_value("sensor.mean_house_humidity") %}
+          Mean humidity for the house is {{ states("sensor.mean_house_humidity") | float | round(0) }}%.
+        {% endif %}
+  HereSetVolume:
+    action:
+      service: "media_player.volume_set"
+      data:
+        entity_id: "{{ states('input_text.last_voice_box_triggered') }}"
+        volume_level: "{{ volume / 100.0 }}"
+  HereVolumeUp:
+    action:
+      service: "media_player.volume_up"
+      data:
+        entity_id: "{{ states('input_text.last_voice_box_triggered') }}"
+  HereVolumeDown:
+    action:
+      service: "media_player.volume_down"
+      data:
+        entity_id: "{{ states('input_text.last_voice_box_triggered') }}"
+  HereMuteVolume:
+    action:
+      service: "media_player.volume_mute"
+      data:
+        entity_id: "{{ states('input_text.last_voice_box_triggered') }}"
+        is_volume_muted: "true"
+  HereUnmuteVolume:
+    action:
+      service: "media_player.volume_mute"
+      data:
+        entity_id: "{{ states('input_text.last_voice_box_triggered') }}"
+        is_volume_muted: "false"
+  GetWeather:
+    action:
+      - service: script.voice_get_climate_outside
+        response_variable: climate_outside
+      - service: script.voice_get_current_weather
+        response_variable: current_weather
+      - variables:
+          result:
+            climate_outside: "{{ climate_outside }}"
+            current_weather: "{{ current_weather }}"
+      - stop: "done"
+        response_variable: result
+    speech:
+      text: "{{ action_response.climate_outside.text }} {{ action_response.current_weather.text }}"
+  GetForecast:
+    action:
+      - service: script.voice_get_7d_forecast
+        data:
+          return_unavailable: true
+        response_variable: forecast
+      - stop: "done"
+        response_variable: forecast
+    speech:
+      text: "{{ action_response.text }}"
+  GetForecastTomorrow:
+    action:
+      - service: script.voice_get_tomorrow_forecast
+        data:
+          return_unavailable: true
+        response_variable: forecast
+      - stop: "done"
+        response_variable: forecast
+    speech:
+      text: "{{ action_response.text }}"
+  ReportClimate:
+    action:
+      - service: script.voice_get_climate_inside
+        response_variable: climate_inside
+      - stop: "done"
+        response_variable: climate_inside
+    speech:
+      text: "{{ action_response.text }}"
+  GetSolarProduction:
+    action:
+      - service: script.voice_get_current_solar_production
+        response_variable: solar_production
+      - stop: "done"
+        response_variable: solar_production
+    speech:
+      text: "{{ action_response.text }}"
+  SleepModeOn:
+    action:
+      service: "input_boolean.turn_on"
+      data:
+        entity_id: "input_boolean.sleep_mode"
+  SleepModeOff:
+    action:
+      service: "input_boolean.turn_off"
+      data:
+        entity_id: "input_boolean.sleep_mode"
+  AreaManualModeOn:
+    action:
+      service: "input_boolean.turn_on"
+      data:
+        entity_id: "{{ manual_area_mode }}"
+    speech:
+      text: "Done"
+  AreaManualModeOff:
+    action:
+      service: "input_boolean.turn_off"
+      data:
+        entity_id: "{{ manual_area_mode }}"
+    speech:
+      text: "Done"
+  GetTime:
+    speech:
+      text: >-
+        {{ ["The time is", "It's", ""] | random }} {{ as_timestamp(now()) | timestamp_custom('%I:%M%p') }}
+  StartTimer:
+    action:
+      - variables:
+          entity_id: >-
+            {{ (states.timer | selectattr('state', 'eq', 'idle')) | map(attribute='entity_id') | first }}
+      - if:
+          - condition: template
+            value_template: "{{ entity_id is defined }}"
+        then:
+          - service: "timer.start"
+            data_template:
+              duration: "{{ hours | int(0) }}:{{ minutes | int(0) }}:{{ seconds | int(0) }}"
+            target:
+              entity_id: "{{ entity_id }}"
+          - service: script.notify
+            data:
+              message: >-
+                {% set h = hours | int(0) %}
+                {% set m = minutes | int(0) %}
+                {% set s = seconds | int(0) %}
+                {%- if h > 0 %}
+                  {{ h }} {% if h > 1 %}hours{% else %}hour{% endif %}
+                {%- endif %}
+                {%- if m > 0 %}
+                  {{ m }} {% if m > 1 %}minutes{% else %}minute{% endif %}
+                {%- endif %}
+                {%- if s > 0 and h < 1 %}
+                  {{ s }} {% if s > 1 %}seconds{% else %}second{% endif %}
+                {%- endif %}
+                timer started, sir.
+              do_not_queue: true
+              no_greeting: true
+              speak_targets: []
+              speak_on_voice_boxes_with_presence: false
+              speak_on_last_voice_box_triggered: true
+        else:
+          - service: script.notify
+            data:
+              message: "All your timers are currently in use, sir."
+              do_not_queue: true
+              no_greeting: true
+              speak_targets: []
+              speak_on_voice_boxes_with_presence: false
+              speak_on_last_voice_box_triggered: true
+  CancelTimer:
+    action:
+      service: "timer.cancel"
+      data:
+        entity_id: "{{ entity_id }}"
+    speech:
+      text: "{{ state_attr(entity_id, 'friendly_name') }} cancelled."
+  AddToTimer:
+    action:
+      - variables:
+          add_seconds: >-
+            {{ ((hours | int(0)) * 60 * 60) +  ((minutes | int(0)) * 60) + (seconds | int(0)) }}
+          duration_seconds: >-
+            {% set hms = state_attr(entity_id, 'duration').split(':') %}
+            {{ ((hms[0] | int(0)) * 60 * 60) +  ((hms[1] | int(0)) * 60) + (hms[2] | int(0)) }}
+          remaining_seconds: >-
+            {{ as_timestamp(state_attr(entity_id, 'finishes_at')) - as_timestamp(now()) }}
+      - if:
+          - condition: template
+            value_template: "{{ (remaining_seconds + add_seconds) > duration_seconds }}"
+        then:
+          - service: "timer.start"
+            data:
+              entity_id: "{{ entity_id }}"
+              duration: "{{ (remaining_seconds + add_seconds) }}"
+        else:
+          - service: "timer.change"
+            data:
+              entity_id: "{{ entity_id }}"
+              duration: "{{ add_seconds }}"
+  RemoveFromTimer:
+    action:
+      - variables:
+          sub_seconds: >-
+            {{ ((hours | int(0)) * 60 * 60) +  ((minutes | int(0)) * 60) + (seconds | int(0)) }}
+          remaining_seconds: >-
+            {{ as_timestamp(state_attr(entity_id, 'finishes_at')) - as_timestamp(now()) }}
+      - if:
+          - condition: template
+            value_template: "{{ (remaining_seconds - sub_seconds) < 0 }}"
+        then:
+          - service: "timer.finish"
+            data:
+              entity_id: "{{ entity_id }}"
+        else:
+          - service: "timer.change"
+            data:
+              entity_id: "{{ entity_id }}"
+              duration: "-{{ sub_seconds }}"
+  PauseTimer:
+    action:
+      service: "timer.pause"
+      data:
+        entity_id: "{{ entity_id }}"
+  ResumeTimer:
+    action:
+      service: "timer.start"
+      data:
+        entity_id: "{{ entity_id }}"
+  ListTimers:
+    action:
+      - service: script.voice_list_timers
+        response_variable: timers
+      - stop: "done"
+        response_variable: timers
+    speech:
+      text: "{{ action_response.text }}"
+  GetTimer:
+    action:
+      - service: script.voice_get_timer
+        data:
+          entity_id: "{{ entity_id }}"
+        response_variable: timer
+      - stop: "done"
+        response_variable: timer
+    speech:
+      text: "{{ action_response.text }}"
+  SetWakeUpAlarmTime:
+    action:
+      - variables:
+          result:
+            alarm_time: >-
+              {%- set h = hours | int(0) %}
+              {%- set m = minutes | int(0) | string %}
+              {%- set mtime = (((h + 12) | string) if (ampm == "PM" and h != 12) else ("00" if (ampm == "AM" and h == 12) else (h | string))) + ":" + m %}
+              {%- set time = today_at(mtime) %}
+
+              {%- if time < now() %}
+                {{ time + timedelta(days=1) }}
+              {%- else %}
+                {{ time }}
+              {%- endif %}
+      - service: input_datetime.set_datetime
+        data:
+          entity_id: "input_datetime.wake_up_alarm_time"
+        data_template:
+          datetime: "{{ result.alarm_time }}"
+      - service: automation.turn_on
+        data:
+          entity_id: "automation.wake_up_alarm_time_triggers"
+      - stop: "done"
+        response_variable: result
+    speech:
+      text: |-
+        Alarm set for {{ as_timestamp(action_response.alarm_time) | timestamp_custom('%I:%M%p') }}{%- if as_datetime(action_response.alarm_time) > today_at("23:59") %} tomorrow {%- endif %}.
+  CancelWakeUpAlarm:
+    action:
+      - service: automation.turn_off
+        data:
+          entity_id: "automation.wake_up_alarm_time_triggers"
+    speech:
+      text: "Alarm cancelled."
+  IsWakeUpAlarmSet:
+    speech:
+      text: |-
+        {%- if is_state('automation.wake_up_alarm_time_triggers', 'on') %}
+          {%- set alarm_time = states('input_datetime.wake_up_alarm_time') %}
+          Yes, your alarm is set for {{ as_timestamp(alarm_time) | timestamp_custom('%I:%M%p') }}{%- if (as_datetime(alarm_time) | as_local) > today_at("23:59") %} tomorrow {%- endif %}.
+        {%- else %}
+          No, your alarm is not set.
+        {%- endif %}

@@ -1,0 +1,34 @@
+voice_get_climate_outside:
+  alias: Voice - Get Climate Outside
+  sequence:
+  - variables:
+      result:
+        text: >-
+          {%- set outside_entity_id = expand(area_entities('Outside')) | selectattr('attributes.device_class', 'eq', 'temperature') | map(attribute='entity_id') | first %}
+          {%- set terrace_entity_id = expand(area_entities('Terrace')) | selectattr('attributes.device_class', 'eq', 'temperature') | map(attribute='entity_id') | first %}
+          It's {{ states(outside_entity_id) | round(1) }}° outside, {{ states(terrace_entity_id) | round(1) }}° on the terrace.
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:home-thermometer-outline
+voice_get_climate_inside:
+  alias: Voice - Get Climate Inside
+  sequence:
+  - variables:
+      result:
+        text: >-
+          {%- set basement_t_entity_id = expand(area_entities('Basement')) | selectattr('attributes.device_class', 'eq', 'temperature') | map(attribute='entity_id') | first %}
+          {%- set basement_h_entity_id = expand(area_entities('Basement')) | selectattr('attributes.device_class', 'eq', 'humidity') | map(attribute='entity_id') | first %}
+          {%- set kitchen_t_entity_id = expand(area_entities('Kitchen')) | selectattr('attributes.device_class', 'eq', 'temperature') | map(attribute='entity_id') | first %}
+          {%- set livingroom_t_entity_id = expand(area_entities('Living Room')) | selectattr('attributes.device_class', 'eq', 'temperature') | map(attribute='entity_id') | first %}
+          {%- set bedroom_t_entity_id = expand(area_entities('Bedroom')) | selectattr('attributes.device_class', 'eq', 'temperature') | map(attribute='entity_id') | first %}
+          It's {{ states(basement_t_entity_id) | float | round(1) }}° in the basement, with {{ states(basement_h_entity_id) | float | round(0) }}% humidity.
+          It's {{ states(kitchen_t_entity_id) | float | round(1) }}° in the kitchen. {{ states(livingroom_t_entity_id) | float | round(1) }}° in the living room.
+          {{ states(bedroom_t_entity_id) | float | round(1) }}° in the bedroom.
+          {%- if has_value('sensor.mean_house_humidity') %}
+            The mean house humidity is {{ states('sensor.mean_house_humidity') | float | round(0) }}%.
+          {%- endif %}
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:home-thermometer

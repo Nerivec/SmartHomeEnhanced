@@ -1,0 +1,157 @@
+alias: Voice - Get Greeted Message
+sequence:
+  - variables:
+      result:
+        text: |-
+          {%- if skip_greeting == true %}
+            {{ message }}
+          {%- else %}
+            {% if last_greeted is defined %}
+              {%- set t = now() %}
+              {%- set lt = as_datetime(last_greeted) %}
+
+              {%- if (t.day == lt.day) and (t.month == lt.month) and (t.year == lt.year) %}
+                {%- if (lt.hour < 12) %}
+                  {%- if (t.hour >= 12) and (t.hour < 17) %}
+                    {{ afternoon }} {{ message }}
+                  {%- elif (t.hour >= 17) %}
+                    {{ evening }} {{ message }}
+                  {%- else %}
+                    {%- if fallback_prepend == true %}
+                      {%- if ((message | wordcount) >= no_fallback_prepend_wordcount) %}
+                        {{ message }}
+                      {%- else %}
+                        {{ message | trim('.') }} {{ fallback }}
+                      {%- endif %}
+                    {%- else %}
+                      {{ fallback }} {{ message }}
+                    {%- endif %}
+                  {%- endif %}
+                {%- elif (lt.hour < 17) %}
+                  {%- if (t.hour >= 17) %}
+                    {{ evening }} {{ message }}
+                  {%- else %}
+                    {%- if fallback_prepend == true %}
+                      {%- if ((message | wordcount) >= no_fallback_prepend_wordcount) %}
+                        {{ message }}
+                      {%- else %}
+                        {{ message | trim('.') }} {{ fallback }}
+                      {%- endif %}
+                    {%- else %}
+                      {{ fallback }} {{ message }}
+                    {%- endif %}
+                  {%- endif %}
+                {%- else %}
+                  {%- if fallback_prepend == true %}
+                    {%- if ((message | wordcount) >= no_fallback_prepend_wordcount) %}
+                      {{ message }}
+                    {%- else %}
+                      {{ message | trim('.') }} {{ fallback }}
+                    {%- endif %}
+                  {%- else %}
+                      {{ fallback }} {{ message }}
+                  {%- endif %}
+                {%- endif %}
+              {%- else %}
+                {%- if (t.hour < 12) %}
+                  {{ morning }} {{ message }}
+                {%- elif (t.hour < 17) %}
+                  {{ afternoon }} {{ message }}
+                {%- else %}
+                  {{ evening }} {{ message }}
+                {%- endif %}
+              {%- endif %}
+            {%- else %}
+              {%- if fallback_prepend == true %}
+                {%- if ((message | wordcount) >= no_fallback_prepend_wordcount) %}
+                  {{ message }}
+                {%- else %}
+                  {{ message | trim('.') }} {{ fallback }}
+                {%- endif %}
+              {%- else %}
+                {{ fallback }} {{ message }}
+              {%- endif %}
+            {%- endif %}
+          {%- endif %}
+  - stop: done
+    response_variable: result
+mode: single
+icon: mdi:account-voice
+fields:
+  message:
+    selector:
+      text: null
+    name: Message
+    required: true
+  skip_greeting:
+    selector:
+      boolean: null
+    name: Skip Greeting
+    required: true
+    default: false
+    description: If true, don't greet, output message directly.
+  morning:
+    selector:
+      text: null
+    name: Morning
+    description: >-
+      Morning greet if never notified before. Can be used to override language
+      too.
+    required: true
+    default: Morning sir.
+  afternoon:
+    selector:
+      text: null
+    name: Afternoon
+    description: >-
+      Afternoon greet if never notified before. Can be used to override language
+      too.
+    required: true
+    default: Afternoon sir.
+  evening:
+    selector:
+      text: null
+    name: Evening
+    description: >-
+      Morning greet if never notified before. Can be used to override language
+      too.
+    default: Evening sir.
+    required: true
+  fallback:
+    selector:
+      text: null
+    name: Fallback
+    description: >-
+      Greet if notified in the same period before. Can be used to override
+      language too.
+    required: true
+    default: Sir?
+  fallback_prepend:
+    selector:
+      boolean: null
+    name: Fallback Prepend
+    description: If true, prepend fallback instead of append.
+    required: true
+    default: false
+  no_fallback_prepend_wordcount:
+    selector:
+      number:
+        min: 0
+        max: 9999
+        step: 1
+        mode: box
+    name: No Fallback Prepend Wordcount
+    description: >-
+      Based on message word count, use or don't use fallback, if fallback
+      prepend is true.
+    default: 8
+    required: true
+  last_greeted:
+    selector:
+      datetime: null
+    name: Last Greeted
+    description: >-
+      Should be passed `state_attr('script.voice_get_greeted_message',
+      'last_triggered') | as_local`. Inside this script, the last_triggered
+      value is already updated; need to pass the not-yet-updated value to the
+      script instead.

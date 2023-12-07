@@ -1,0 +1,73 @@
+voice_get_timer:
+  alias: Voice - Get Timer
+  sequence:
+  - variables:
+      result:
+        text: |-
+          {%- if is_state(entity_id, 'active') %}
+            {{ state_attr(entity_id, 'friendly_name') }} finishes in
+            {%- set endts = as_timestamp(state_attr(entity_id, 'finishes_at')) %}
+            {%- set rem = ((endts - as_timestamp(now())) | timestamp_custom('%H:%M:%S', false)).split(':') %}
+            {%- set rem_h = (rem[0] | int(0)) %}
+            {%- set rem_m = (rem[1] | int(0)) %}
+            {%- set rem_s = (rem[2] | int(0)) %}
+            {%- if rem_h > 0 %}
+              {{ rem_h }} {%- if rem_h > 1 %}hours{%- else %}hour{%- endif %}
+            {%- endif %}
+            {%- if rem_m > 0 %}
+              {{ rem_m }} {%- if rem_m > 1 %}minutes{%- else %}minute{%- endif %}
+            {%- endif %}
+            {%- if rem_s > 0 and rem_h < 1 %}
+              {{ rem_s }} {%- if rem_s > 1 %}seconds{%- else %}second{%- endif %}
+            {%- endif %}
+            {%- if (endts > as_timestamp(today_at("23:59:59"))) %}
+              , tomorrow at {{ endts | timestamp_custom('%I:%M%p') }}
+            {%- endif %}
+            .
+          {%- else %}
+            {{ state_attr(entity_id, 'friendly_name') }} is not currently active.
+          {%- endif %}
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:timer
+  fields:
+    entity_id:
+      selector:
+        text:
+      name: Entity ID
+      required: true
+voice_list_timers:
+  alias: Voice - List Timers
+  sequence:
+  - variables:
+      result:
+        text: >-
+          {%- for t in ((states.timer | selectattr('state', 'eq', 'active')) |
+          map(attribute='entity_id') | list) %}
+            {{ state_attr(t, 'friendly_name') }} finishes in
+            {%- set endts = as_timestamp(state_attr(t, 'finishes_at')) %}
+            {%- set rem = ((endts - as_timestamp(now())) | timestamp_custom('%H:%M:%S', false)).split(':') %}
+            {%- set rem_h = (rem[0] | int(0)) %}
+            {%- set rem_m = (rem[1] | int(0)) %}
+            {%- set rem_s = (rem[2] | int(0)) %}
+            {%- if rem_h > 0 %}
+              {{ rem_h }} {% if- rem_h > 1 %}hours{%- else %}hour{%- endif %}
+            {%- endif %}
+            {%- if rem_m > 0 %}
+              {{ rem_m }} {% if- rem_m > 1 %}minutes{%- else %}minute{%- endif %}
+            {%- endif %}
+            {%- if rem_s > 0 and rem_h < 1 %}
+              {{ rem_s }} {% if- rem_s > 1 %}seconds{%- else %}second{%- endif %}
+            {%- endif %}
+            {%- if (endts > as_timestamp(today_at("23:59:59"))) %}
+              , tomorrow at {{ endts | timestamp_custom('%I:%M%p') }}
+            {%- endif %}
+            .
+          {%- else %}
+            No timer is currently active.
+          {%- endfor %}
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:timer

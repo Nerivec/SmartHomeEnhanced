@@ -1,0 +1,181 @@
+voice_get_8h_forecast:
+  alias: Voice - Get 8H Forecast
+  sequence:
+  - service: weather.get_forecasts
+    data:
+      type: hourly
+    target:
+      entity_id: weather.home
+    response_variable: weather
+  - variables:
+      result:
+        text: |-
+          {%- if has_value('weather.home') %}
+            {%- set wind_angles = ["North","North North East","North East","East North East","East","East South East","South East","South South East","South","South South West","South West","West South West","West","West North West","North West","North North West"] %}
+            {%- set ns = namespace(low=99.0, high=-99.0, rain=0.0, wind=0.0, wind_bearing='unknown') %}
+            {%- for fc in weather['weather.home']['forecast'][1:9] %}
+              {%- if fc.temperature < ns.low %}
+                {%- set ns.low = fc.temperature %}
+              {%- endif %}
+              {%- if fc.temperature > ns.high %}
+                {%- set ns.high = fc.temperature %}
+              {%- endif %}
+              {%- if fc.precipitation > ns.rain %}
+                {%- set ns.rain = fc.precipitation %}
+              {%- endif %}
+              {%- if fc.wind_speed > ns.wind %}
+                {%- set ns.wind = fc.wind_speed %}
+                {%- set ns.wind_bearing = wind_angles[(((fc.wind_bearing / 22.5) + 0.5) | int) % 16] if is_number(fc.wind_bearing) else 'unknown' %}
+              {%- endif %}
+            {%- endfor %}
+            For the next 8 hours, expect {%- if (ns.high - ns.low) > 1.0 %} between {{ ns.low | round(0) }} and {{ ns.high | round(0) }}{%- else %}around {{ ((ns.high + ns.low) / 2) | round(0) }}{%- endif %}°{%- if ns.rain > 0.0 %}, up to {{ ns.rain }} millimeters of rain{%- endif %} and {%- if ns.wind > 0 %} top winds at {{ ns.wind | round(0) }} kilometers bearing {{ ns.wind_bearing }}{%- else %} no wind{%- endif %}.
+          {%- elif return_unavailable %}
+            Weather services are currently unavailable.
+          {%- endif %}
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:weather-cloudy-clock
+  fields:
+    return_unavailable:
+      selector:
+        boolean:
+      name: Return Unavailable
+      description: If true, and weather cannot be retrieved, return unavailable message
+      default: false
+voice_get_7d_forecast:
+  alias: Voice - Get 7D Forecast
+  sequence:
+  - service: weather.get_forecasts
+    data:
+      type: hourly
+    target:
+      entity_id: weather.home
+    response_variable: weather
+  - variables:
+      result:
+        text: |-
+          {%- if has_value('weather.home') %}
+            {%- set wind_angles = ["North","North North East","North East","East North East","East","East South East","South East","South South East","South","South South West","South West","West South West","West","West North West","North West","North North West"] %}
+            {%- set ns = namespace(low=99.9, high=-99.9, rain_high=0.0, wind_high=0.0, wind_high_bearing='unknown') %}
+            {%- for fc in weather['weather.home']['forecast'] %}
+              {%- set fc_datetime = as_datetime(fc.datetime) | as_local %}
+              {%- if fc_datetime < (now() + timedelta(days=7)) %}
+                {%- if fc.temperature < ns.low %}
+                  {%- set ns.low = fc.temperature %}
+                {%- endif %}
+                {%- if fc.temperature > ns.high %}
+                  {%- set ns.high = fc.temperature %}
+                {%- endif %}
+                {%- if fc.wind_speed > ns.wind_high %}
+                  {%- set ns.wind_high = fc.wind_speed %}
+                  {%- set ns.wind_high_bearing = wind_angles[(((fc.wind_bearing / 22.5) + 0.5) | int) % 16] if is_number(fc.wind_bearing) else 'unknown' %}
+                {%- endif %}
+                {%- if 'precipitation' in fc %}
+                  {%- if fc.precipitation > ns.rain_high %}
+                    {%- set ns.rain_high = fc.precipitation %}
+                  {%- endif %}
+                {%- endif %}
+              {%- endif %}
+            {%- endfor %}
+            The hourly forecast for the next 7 days has lowest at {{ ns.low | round(0) }}° and highest at {{ ns.high | round(0) }}.
+            {% if ns.wind_high > 0 %}Top winds at {{ ns.wind_high | round(0) }} kilometers, bearing {{ ns.wind_high_bearing }}{% else %}No wind{% endif %}.
+            And for the next couple of days, {% if ns.rain_high > 0 %}worst rain at {{ ns.rain_high }} millimeters{% else %}no rain{% endif %}.
+          {%- elif return_unavailable %}
+            Weather services are currently unavailable.
+          {%- endif %}
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:weather-cloudy-clock
+  fields:
+    return_unavailable:
+      selector:
+        boolean:
+      name: Return Unavailable
+      description: If true, and weather cannot be retrieved, return unavailable message
+      default: false
+voice_get_tomorrow_forecast:
+  alias: Voice - Get Tomorrow Forecast
+  description: Get forecast for the next 12h shifted 12h forward. Better to call this in the evening for actual tomorrow results (if called at 7PM, will use next-day 7AM-7PM range).
+  sequence:
+  - service: weather.get_forecasts
+    data:
+      type: hourly
+    target:
+      entity_id: weather.home
+    response_variable: weather
+  - variables:
+      result:
+        text: |-
+          {%- if has_value('weather.home') %}
+            {%- set wind_angles = ["North","North North East","North East","East North East","East","East South East","South East","South South East","South","South South West","South West","West South West","West","West North West","North West","North North West"] %}
+            {%- set ns = namespace(low=99.9, high=-99.9, rain_high=0.0, wind_high=0.0, wind_high_bearing='unknown') %}
+            {%- for fc in weather['weather.home']['forecast'][12:25] %}
+              {%- set fc_datetime = as_datetime(fc.datetime) | as_local %}
+              {%- if fc_datetime < (now() + timedelta(days=7)) %}
+                {%- if fc.temperature < ns.low %}
+                  {%- set ns.low = fc.temperature %}
+                {%- endif %}
+                {%- if fc.temperature > ns.high %}
+                  {%- set ns.high = fc.temperature %}
+                {%- endif %}
+                {%- if fc.wind_speed > ns.wind_high %}
+                  {%- set ns.wind_high = fc.wind_speed %}
+                  {%- set ns.wind_high_bearing = wind_angles[(((fc.wind_bearing / 22.5) + 0.5) | int) % 16] if is_number(fc.wind_bearing) else 'unknown' %}
+                {%- endif %}
+                {%- if 'precipitation' in fc %}
+                  {%- if fc.precipitation > ns.rain_high %}
+                    {%- set ns.rain_high = fc.precipitation %}
+                  {%- endif %}
+                {%- endif %}
+              {%- endif %}
+            {%- endfor %}
+            The half-daily forecast shifted 12 hours has lowest at {{ ns.low | round(0) }}° and highest at {{ ns.high | round(0) }}.
+            {% if ns.rain_high > 0 %}Worst rain at {{ ns.rain_high }} millimeters{% else %}No rain{% endif %}.
+            And {% if ns.wind_high > 0 %}top winds at {{ ns.wind_high | round(0) }} kilometers, bearing {{ ns.wind_high_bearing }}{% else %}no wind{% endif %}.
+          {%- elif return_unavailable %}
+            Weather services are currently unavailable.
+          {%- endif %}
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:weather-cloudy-clock
+  fields:
+    return_unavailable:
+      selector:
+        boolean:
+      name: Return Unavailable
+      description: If true, and weather cannot be retrieved, return unavailable message
+      default: false
+voice_get_current_weather:
+  alias: Voice - Get Current Weather
+  sequence:
+  - variables:
+      result:
+        text: |-
+          {%- if has_value('weather.home') %}
+            {%- set wb = state_attr('weather.home', 'wind_bearing') %}
+            {%- set wind_angles = ["North","North North East","North East","East North East","East","East South East","South East","South South East","South","South South West","South West","West South West","West","West North West","North West","North North West"] %}
+            {%- set wind_bearing_angle = wind_angles[(((wb / 22.5) + 0.5) | int) % 16] if is_number(wb) else 'unknown' %}
+            Cloud cover is about {{ state_attr('weather.home', 'cloud_coverage') | round(0) }}%.
+            {%- set rain_chance = states('sensor.home_rain_chance') %}
+            {%- set snow_chance = states('sensor.home_snow_chance') %}
+            {%- set might_rain = rain_chance | float(0) > 0.0 %}
+            {%- set might_snow = snow_chance | float(0) > 0.0 %}
+            {%- if might_rain %} There's {{ rain_chance }}% chance of rain{%- endif %}{%- if might_snow %}{%- if might_rain %} and {%- else %} There's {%- endif %} {{ snow_chance }}% chance of snow{%- endif %}.
+            Wind is around {{ state_attr('weather.home', 'wind_speed') | round(0) }} kilometers bearing {{ wind_bearing_angle }}.
+          {%- elif return_unavailable %}
+            Weather services are currently unavailable.
+          {%- endif %}
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:weather-cloudy
+  fields:
+    return_unavailable:
+      selector:
+        boolean:
+      name: Return Unavailable
+      description: If true, and weather cannot be retrieved, return unavailable message
+      default: false

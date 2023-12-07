@@ -1,0 +1,6 @@
+language: "en"
+intents:
+  GetSolarProduction:
+    data:
+      - sentences:
+          - "<what_is> [the] [current] solar production"

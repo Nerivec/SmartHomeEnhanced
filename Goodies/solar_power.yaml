@@ -1,0 +1,33 @@
+template:
+  - sensor:
+      # WARNING: GRID values assume all the solar power is consumed by house first and grid only provides when not enough (which is not technically "accurate" since grid can also supply depending on voltage)
+      - name: "Grid Import Power"
+        unique_id: grid_import_power
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set solar_power = states('sensor.solar_power_meter_power') | float(default=0.0) %}
+          {% set house_power = states('sensor.house_power_meter_power') | float(default=0.0) %}
+          {% set grid_ie_offset = states('input_number.grid_import_export_offset') | float(default=0.0) %}
+
+          {{ house_power if (solar_power < (house_power + grid_ie_offset)) else 0.0 }}
+      - name: "Grid Export Power"
+        unique_id: grid_export_power
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set solar_power = states('sensor.solar_power_meter_power') | float(default=0.0) %}
+          {% set house_power = states('sensor.house_power_meter_power') | float(default=0.0) %}
+          {% set grid_ie_offset = states('input_number.grid_import_export_offset') | float(default=0.0) %}
+
+          {{ house_power if (solar_power > (house_power + grid_ie_offset)) else 0.0 }}
+      # WARNING: There is a discrepancy whenever grid import & export are too close to each other, but it doesn't affect the result (daily tally) much as long as your panels and your house are not constantly producing/using around the same amount (unlikely).
+      - name: "House Consumption Power"
+        unique_id: house_consumption_power
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {{ states('sensor.solar_power_meter_power') | float(0.0) - states('sensor.grid_export_power') | float(0.0) + states('sensor.grid_import_power') | float(0.0) }}

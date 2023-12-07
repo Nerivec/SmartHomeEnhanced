@@ -1,0 +1,7 @@
+language: "en"
+responses:
+  intents:
+    HassTurnOn:
+      default: "Done"
+    HassTurnOff:
+      default: "Done"

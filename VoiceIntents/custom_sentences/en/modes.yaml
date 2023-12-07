@@ -1,0 +1,29 @@
+language: "en"
+intents:
+  SleepModeOn:
+    data:
+      - sentences:
+          - "good night"
+  SleepModeOff:
+    data:
+      - sentences:
+          - "[good] morning"
+          - "wake up"
+  AreaManualModeOn:
+    data:
+      - sentences:
+          - "<set> {manual_area_mode} [to] manual"
+          - "disable {manual_area_mode} motion"
+          - "keep {manual_area_mode} on"
+  AreaManualModeOff:
+    data:
+      - sentences:
+          - "<set> {manual_area_mode} [to] auto"
+          - "enable {manual_area_mode} motion"
+          - "revert {manual_area_mode} [to] auto"
+
+lists:
+  manual_area_mode:
+    values:
+      - in: "kitchen"
+        out: "input_boolean.manual_kitchen_mode"

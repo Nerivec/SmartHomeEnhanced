@@ -1,0 +1,38 @@
+template:
+  - binary_sensor:
+      # XXX: will stop working when Home Assistant enforces the "get forecast from service" policy
+      - name: "Forecast 24h Hail"
+        unique_id: home_forecast_24h_hail
+        device_class: safety
+        state: >
+          {{ state_attr('weather.home', 'forecast')[:24] | selectattr('condition', 'search', 'hail') | list | count > 0 }}
+        icon: >
+          {% if is_state("binary_sensor.home_forecast_24h_hail", "on") %}
+            mdi:weather-hail
+          {% else %}
+            mdi:cloud-check
+          {% endif %}
+      # XXX: will stop working when Home Assistant enforces the "get forecast from service" policy
+      - name: "Forecast 24h Lightning"
+        unique_id: home_forecast_24h_lightning
+        device_class: safety
+        state: >
+          {{ state_attr('weather.home', 'forecast')[:24] | selectattr('condition', 'search', 'lightning') | list | count > 0 }}
+        icon: >
+          {% if is_state("binary_sensor.home_forecast_24h_lightning", "on") %}
+            mdi:weather-lightning
+          {% else %}
+            mdi:cloud-check
+          {% endif %}
+      # XXX: will stop working when Home Assistant enforces the "get forecast from service" policy
+      - name: "Forecast 24h Snow"
+        unique_id: home_forecast_24h_snow
+        device_class: safety
+        state: >
+          {{ state_attr('weather.home', 'forecast')[:24] | selectattr('condition', 'search', 'snow') | list | count > 0 }}
+        icon: >
+          {% if is_state("binary_sensor.home_forecast_24h_snow", "on") %}
+            mdi:weather-snowy
+          {% else %}
+            mdi:cloud-check
+          {% endif %}

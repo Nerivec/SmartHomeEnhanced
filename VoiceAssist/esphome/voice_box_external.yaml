@@ -1,0 +1,81 @@
+esphome:
+  name: voice_box_external
+
+# NOTE: don't forget the rest
+
+i2s_audio:
+  # WS on INMP441
+  i2s_lrclk_pin: 4
+  # SCK on INMP441
+  i2s_bclk_pin: 5
+
+microphone:
+  - platform: i2s_audio
+    id: vbe_mic
+    # SD on INMP441
+    i2s_din_pin: 6
+    adc_type: external
+    pdm: false
+    channel: right
+    bits_per_sample: 32bit
+
+voice_assistant:
+  id: vbe_va
+  microphone: vbe_mic
+  noise_suppression_level: 2
+  auto_gain: 31dBFS
+  volume_multiplier: 2.0
+  use_wake_word: false
+  on_stt_end:
+    - homeassistant.service:
+        service: input_text.set_value
+        data:
+          value: media_player.vlc_telnet
+          entity_id: input_text.last_voice_box_triggered
+  on_tts_start:
+    - homeassistant.service:
+        service: script.esphome_notify
+        data:
+          target: "media_player.vlc_telnet"
+        data_template:
+          message: "{{ msg }}"
+        variables:
+          msg: return x;
+  on_error:
+   - if:
+        condition:
+          switch.is_on: use_wake_word
+        then:
+          - switch.turn_off: use_wake_word
+          - switch.turn_on: use_wake_word
+  on_client_connected:
+    - if:
+        condition:
+          switch.is_on: use_wake_word
+        then:
+          - voice_assistant.start_continuous:
+  on_client_disconnected:
+    - if:
+        condition:
+          switch.is_on: use_wake_word
+        then:
+          - voice_assistant.stop:
+
+switch:
+  - platform: template
+    id: use_wake_word
+    name: Wake Word Enabled
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+    on_turn_on:
+      - lambda: id(vbe_va).set_use_wake_word(true);
+      - if:
+          condition:
+            not:
+              - voice_assistant.is_running
+          then:
+            - voice_assistant.start_continuous
+    on_turn_off:
+      - voice_assistant.stop
+      - lambda: id(vbe_va).set_use_wake_word(false);

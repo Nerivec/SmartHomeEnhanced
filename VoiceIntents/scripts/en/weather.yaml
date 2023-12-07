@@ -77,6 +77,8 @@ voice_get_7d_forecast:
                     {%- set ns.rain_high = fc.precipitation %}
                   {%- endif %}
                 {%- endif %}
+              {%- else %}
+                {%- break %}
               {%- endif %}
             {%- endfor %}
             The hourly forecast for the next 7 days has lowest at {{ ns.low | round(0) }}° and highest at {{ ns.high | round(0) }}.

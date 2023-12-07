@@ -4,6 +4,43 @@ intents:
     data:
       - sentences:
           - "<what_is> [the] time"
+  GetDate:
+    data:
+      - sentences:
+          - "<what_is> [the] (day|date)"
+          - "<what_is> today's date"
+          - "what day is today"
+  GetFutureDate:
+    data:
+      - sentences:
+          - "what will be [the] date [in] ({spelled_numbers:weeks}|{weeks}) week[s] [and] ({spelled_numbers:days}|{days}) day[s] [and] ({spelled_numbers:hours}|{hours}) hour[s] [from (now|today)]"
+      - sentences:
+          - "what will be [the] date [in] ({spelled_numbers:days}|{days}) day[s] [and] ({spelled_numbers:hours}|{hours}) hour[s] [from (now|today)]"
+        slots:
+          weeks: 0
+      - sentences:
+          - "what will be [the] date [in] ({spelled_numbers:weeks}|{weeks}) week[s] [and] ({spelled_numbers:days}|{days}) day[s] [from (now|today)]"
+        slots:
+          hours: 0
+      - sentences:
+          - "what will be [the] date [in] ({spelled_numbers:weeks}|{weeks}) week[s] [and] ({spelled_numbers:hours}|{hours}) hour[s] [from (now|today)]"
+        slots:
+          days: 0
+      - sentences:
+          - "what will be [the] date [in] ({spelled_numbers:weeks}|{weeks}) week[s] [from (now|today)]"
+        slots:
+          days: 0
+          hours: 0
+      - sentences:
+          - "what will be [the] date [in] ({spelled_numbers:days}|{days}) day[s] [from (now|today)]"
+        slots:
+          weeks: 0
+          hours: 0
+      - sentences:
+          - "what will be [the] date [in] ({spelled_numbers:hours}|{hours}) hour[s] [from (now|today)]"
+        slots:
+          weeks: 0
+          days: 0
   StartTimer:
     data:
       - sentences:
@@ -234,6 +271,14 @@ lists:
     range:
       from: 0
       to: 24
+  days:
+    range:
+      from: 0
+      to: 1000
+  weeks:
+    range:
+      from: 0
+      to: 1000
   ampm:
     values:
       - in: "(am|a.m|a.m.|morning)"

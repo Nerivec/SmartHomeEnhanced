@@ -58,9 +58,10 @@ voice_get_7d_forecast:
           {%- if has_value('weather.home') %}
             {%- set wind_angles = ["North","North North East","North East","East North East","East","East South East","South East","South South East","South","South South West","South West","West South West","West","West North West","North West","North North West"] %}
             {%- set ns = namespace(low=99.9, high=-99.9, rain_high=0.0, wind_high=0.0, wind_high_bearing='unknown') %}
+            {%- set end_datetime = now() + timedelta(days=7) %}
             {%- for fc in weather['weather.home']['forecast'] %}
               {%- set fc_datetime = as_datetime(fc.datetime) | as_local %}
-              {%- if fc_datetime < (now() + timedelta(days=7)) %}
+              {%- if fc_datetime < end_datetime %}
                 {%- if fc.temperature < ns.low %}
                   {%- set ns.low = fc.temperature %}
                 {%- endif %}

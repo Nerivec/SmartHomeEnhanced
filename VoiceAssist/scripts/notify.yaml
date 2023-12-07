@@ -58,7 +58,8 @@ sequence:
         timeout: "00:00:30"
       - if:
           - condition: template
-            value_template: "{{ bypass_sound_fix is not defined or not bypass_sound_fix }}"
+            value_template: >-
+              {{ (bypass_sound_fix is not defined or not bypass_sound_fix) and (media_player_entity_ids | contains('media_player.vlc_telnet')) }}
         then:
           - service: media_player.play_media
             data:

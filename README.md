@@ -261,7 +261,7 @@ As for devices, I tried a few brands (Zigbee-only):
 - `Moes` is fine
 - `Sonoff` is pretty good (my primary choice)
   - SNZB-02 humidity needs calibration (off by quite a lot, 5-10% usually)
-  - ZBMini as a crappy antenna, as in, battery-sensors will have a better link quality at 3 times the distance, but as long as they are close enough to still connect, it doesn't matter too much (obviously a bit more power used, but they're wired...)
+  - ZBMini has a crappy antenna, as in, battery-sensors will have a better link quality at 3 times the distance, but as long as they are close enough to still connect, it doesn't matter too much (obviously a bit more power used, but they're wired...)
 - `Zemismart` has connectivity and state freeze issues
 - `Linkind` is battery-hungry like you wouldn't believe (might as well buy a battery factory)...
 - `OSRAM/Ledvance` is pretty good too (except for the below), though not in the same price range

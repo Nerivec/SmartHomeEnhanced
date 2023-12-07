@@ -123,6 +123,14 @@ intent_script:
     speech:
       text: >-
         {{ ["The time is", "It's", ""] | random }} {{ as_timestamp(now()) | timestamp_custom('%I:%M%p') }}
+  GetDate:
+    speech:
+      text: >-
+        {{ ["The day is", "Today is", "It's"] | random }} {{ as_timestamp(now()) | timestamp_custom('%A, %B %d') }}
+  GetFutureDate:
+    speech:
+      text: >-
+        {{ ["The date will be", "It will be"] | random }} {{ as_timestamp(now() + timedelta(weeks=(weeks | int(0)), days=(days | int(0)), hours=(hours | int(0)))) | timestamp_custom('%A, %B %d') }}
   StartTimer:
     action:
       - variables:

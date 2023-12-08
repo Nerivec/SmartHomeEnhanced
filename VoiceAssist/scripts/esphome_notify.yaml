@@ -35,6 +35,9 @@ sequence:
       - condition: template
         value_template: "{{ ww_switch is defined and ww_switch != \"\" }}"
     then:
+      - wait_template: "{{ is_state(target, 'playing') }}"
+        continue_on_timeout: true
+        timeout: "00:00:30"
       - wait_template: "{{ is_state(target, 'idle') }}"
         continue_on_timeout: true
         timeout: "00:00:30"

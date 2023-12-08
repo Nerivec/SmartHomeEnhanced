@@ -201,6 +201,8 @@ The big 3 are left behind, by a large margin, in terms of "smart home" capabilit
 
 - Do check out presence/occupancy sensors, although less popular for now (growing fast), they might be better than PIR motion sensors for some applications (stationary person detection, at the cost of smarter positioning required to avoid false-detections with things like robots, curtains...).
 
+- Don't add integrations/add-ons/plugins/whatever-name-they-have-in-your-system, unless you really need them to do a particular job. For example, I've seen far too many "speedtest" integrations wasting bandwidth for no reason/gain; this is the kind of tool useful when you have connectivity issues, not to see hour-to-hour (or worse) 0.1 changes...
+
 - Do get a system that offers decent statistics on your smart home, it will help you figure out a lot of things
   - Where savings can be made (power meters are your friends)
   - Where problems might arise in the house (and "fully-established" ones...)

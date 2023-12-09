@@ -7,7 +7,7 @@ Below, you will find a detailed playback of my trials and errors in the Smart Ho
 You will find examples for Home Assistant-related configuration in the subfolders.
 Most of it is meant to work together, and might need some tweaking if you want to use only part of it. Each folder has a list of the requirements for each part.
 
-
+<a href="https://www.buymeacoffee.com/Nerivec" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ## An Expected Journey
 

@@ -184,7 +184,7 @@ automation notify (from whatever trigger):
 ## esphome/voice_box.yaml
 
 An example configuration for ESPHome `voice_assistant`.
-Used with an S3, but should work with others, hardware-permitting.
+Used with an [S3](https://github.com/vcc-gnd/YD-ESP32-S3), but should work with others, hardware-permitting.
 
 - i2s_audio
 - dual microphones (INMP441 connected as per the [docs p11](https://invensense.tdk.com/wp-content/uploads/2015/02/INMP441.pdf))
@@ -193,7 +193,7 @@ Used with an S3, but should work with others, hardware-permitting.
 ## esphome/voice_box_external.yaml
 
 An example configuration for ESPHome `voice_assistant` that plays TTS on an external media player through script.
-Used with an S3, but should work with others, hardware-permitting.
+Used with an [S3](https://github.com/vcc-gnd/YD-ESP32-S3), but should work with others, hardware-permitting.
 
 - i2s_audio
 - dual microphones (INMP441 connected as per the [docs p11](https://invensense.tdk.com/wp-content/uploads/2015/02/INMP441.pdf))

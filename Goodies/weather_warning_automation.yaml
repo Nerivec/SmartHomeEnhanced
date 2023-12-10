@@ -1,14 +1,15 @@
 alias: Time triggers weather warning notify
 description: ""
 trigger:
-  - platform: time_pattern
-    minutes: "55"
+  - platform: state
+    entity_id:
+      - weather.home
 condition:
   - condition: template
     value_template: "{{ has_value('weather.home') }}"
   - condition: template
     value_template: >-
-      {{ (now() - state_attr('automation.time_triggers_weather_warning_notify', 'last_triggered')) > timedelta(hours=3) }}
+      {{ (now() - state_attr('automation.time_triggers_weather_warning_notify', 'last_triggered')) > timedelta(hours=6) }}
 action:
   - service: weather.get_forecasts
     data:

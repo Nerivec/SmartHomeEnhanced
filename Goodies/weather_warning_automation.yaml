@@ -10,7 +10,7 @@ condition:
     value_template: >-
       {{ (now() - state_attr('automation.time_triggers_weather_warning_notify', 'last_triggered')) > timedelta(hours=3) }}
 action:
-  - service: weather.get_forecast
+  - service: weather.get_forecasts
     data:
       type: hourly
     target:
@@ -18,7 +18,7 @@ action:
     response_variable: weather
   - variables:
       result: >-
-        {%- set fc_24 = weather.forecast[1:25] %}
+        {%- set fc_24 = weather['weather.home']['forecast'][1:25] %}
         {%- set ns = namespace(warning=[]) %}
         {%- if fc_24 | selectattr('condition', 'search', 'snow') | first is defined %}
           {%- set ns.warning = ns.warning + ['snow'] %}

@@ -198,3 +198,45 @@ Used with an [S3](https://github.com/vcc-gnd/YD-ESP32-S3), but should work with 
 - i2s_audio
 - dual microphones (INMP441 connected as per the [docs p11](https://invensense.tdk.com/wp-content/uploads/2015/02/INMP441.pdf))
 - play audio to external `media_player` through Home Assistant script.
+
+
+# scripts/ask_question.yaml
+
+Get Assist to ask you a question, and wait for a reply (yes/no/nothing).
+Be sure to adapt delays/timeouts according to your device specs and overall STT performance (Whisper model used, how slow it is, etc).
+
+- TTS asks a question
+- HA waits until TTS is done playing
+- ESPHome stops wake word detection
+- ESPHome triggers listening to response
+- STT waits for yes/no/timeout
+  - if yes, run given script
+- ESPHome reverts to wake word detection
+
+Required switch in ESPHome device:
+
+```yaml
+switch:
+  - platform: template
+    id: listen_once
+    name: Listen Once
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - switch.turn_off: use_wake_word
+      - delay: 0.5s
+      - voice_assistant.start
+    on_turn_off:
+      - switch.turn_on: use_wake_word
+```
+
+Using the script:
+
+```yaml
+service: script.ask_question
+data:
+  question: Do you want the forecast for tomorrow?
+  target: media_player.vlc_telnet
+  run_on_yes: script.tts_give_tomorrow_forecast
+  listen_once_switch: switch.voice_box_listen_once
+```

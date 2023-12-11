@@ -1,0 +1,86 @@
+alias: Ask Question
+sequence:
+  - service: tts.speak
+    target:
+      entity_id: tts.piper
+    data:
+      cache: true
+      message: "{{ question }}"
+      media_player_entity_id: "{{ target }}"
+  - wait_template: "{{ is_state(target, 'playing') }}"
+    continue_on_timeout: true
+    timeout: "00:00:30"
+  - wait_template: "{{ is_state(target, 'idle') }}"
+    continue_on_timeout: true
+    timeout: "00:00:30"
+  - service: switch.turn_on
+    target:
+      entity_id: "{{ listen_once_switch }}"
+    data: {}
+  - wait_for_trigger:
+      - platform: conversation
+        command:
+          - yes please
+          - yes thank you
+          - yes thanks
+          - yes go ahead
+          - sure go ahead
+          - "yes"
+          - sure
+        id: "YES"
+      - platform: conversation
+        command:
+          - no thank you
+          - no thanks
+          - "no"
+        id: "NO"
+    timeout:
+      hours: 0
+      minutes: 0
+      seconds: 25
+      milliseconds: 0
+    continue_on_timeout: true
+  - if:
+      - condition: template
+        value_template: "{{ wait.trigger != None and wait.trigger.id == 'YES' }}"
+    then:
+      - service: script.turn_on
+        target:
+          entity_id: "{{ run_on_yes }}"
+        data: {}
+  - service: switch.turn_off
+    target:
+      entity_id: "{{ listen_once_switch }}"
+    data: {}
+mode: single
+icon: mdi:chat-question
+fields:
+  question:
+    selector:
+      text: null
+    name: Question
+    description: The question to ask.
+    required: true
+    default: What's up?
+  target:
+    selector:
+      text: null
+    name: Target
+    description: Target media_player entity ID.
+    required: true
+    default: media_player.vlc_telnet
+  run_on_yes:
+    selector:
+      text: null
+    name: Run on YES
+    description: Entity ID of the script to run if yes is answered.
+    required: true
+  listen_once_switch:
+    selector:
+      text: null
+    name: Listen Once Switch
+    description: >-
+      Switch entity ID used on Voice ESPHome device to force listening to a
+      single command (wake word detection should be deactivated in the
+      meantime).
+    required: true

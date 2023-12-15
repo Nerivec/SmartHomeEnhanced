@@ -82,6 +82,8 @@ sequence:
           fallback: Sir?
           fallback_prepend: false
           no_fallback_prepend_wordcount: 8
+          last_greeted: >-
+            {{ state_attr('script.voice_get_greeted_message', 'last_triggered') | as_local }}
         response_variable: greeted_message
       - service: tts.speak
         target:

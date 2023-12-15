@@ -240,3 +240,9 @@ data:
   run_on_yes: script.tts_give_tomorrow_forecast
   listen_once_switch: switch.voice_box_listen_once
 ```
+
+
+# alt_esphome_driven
+
+This is pretty much the same logic applied in the above, except the `media_player` play/idle and voice pipeline activation/deactivation is driven by ESPHome directly.
+I switched to this recently, as I no longer need the vlc_telnet fix, it makes for cleaner notify scripts and works just as well (if not better).

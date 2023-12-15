@@ -1,0 +1,38 @@
+alias: Check Queued Notifications
+sequence:
+  - if:
+      - condition: numeric_state
+        entity_id: todo.queued_notifications
+        above: 0
+    then:
+      - service: todo.get_items
+        target:
+          entity_id: todo.queued_notifications
+        data:
+          status: needs_action
+        response_variable: result
+      - service: script.notify
+        data:
+          message: >-
+            You have queued notifications.
+            {%- for i in result["todo.queued_notifications"]["items"] %}
+              {{ i.summary }}.
+            {%- endfor %}
+          no_greeting: true
+          speak_targets: []
+          speak_on_voice_boxes_with_presence: true
+          speak_on_last_voice_box_triggered: false
+          do_not_queue: true
+      - service: todo.remove_item
+        data:
+          item: >-
+            {%- set ns = namespace(items=[]) %}
+            {%- for i in result["todo.queued_notifications"]["items"] %}
+              {%- set ns.items = ns.items + [i.summary] %}
+            {%- endfor %}
+            {{ ns.items }}
+        target:
+          entity_id: todo.queued_notifications
+        enabled: true
+mode: single
+icon: mdi:speaker-message

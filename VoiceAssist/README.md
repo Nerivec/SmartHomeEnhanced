@@ -49,7 +49,7 @@ NOTE: You can use remote control integrations (simple keypress support is enough
 
 - Text `input_text.last_voice_box_triggered`
   - Used to keep track of last activated device (in the form of the associated media player entity ID) for various needs (like area last triggered, quick volume control, etc)
-  - Set by ESPHome in `on_stt_end` (should also be set by automation if using mic plugged directly into HA)
+  - Set by ESPHome in `on_stt_vad_start` (should also be set by automation if using mic plugged directly into HA)
 
 # scripts/notify.yaml
 

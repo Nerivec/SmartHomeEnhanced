@@ -67,7 +67,7 @@ fields:
     name: Target
     description: Target media_player entity ID.
     required: true
-    default: media_player.vlc_telnet
+    default: media_player.voice_box_player
   run_on_yes:
     selector:
       text: null

@@ -22,6 +22,7 @@ sequence:
           speak_targets: []
           speak_on_voice_boxes_with_presence: true
           speak_on_last_voice_box_triggered: false
+          do_not_queue: true
       - service: todo.remove_item
         data:
           item: >-

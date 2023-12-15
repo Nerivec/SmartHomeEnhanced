@@ -28,7 +28,7 @@ voice_get_8h_forecast:
                 {%- set ns.wind_bearing = wind_angles[(((fc.wind_bearing / 22.5) + 0.5) | int) % 16] if is_number(fc.wind_bearing) else 'unknown' %}
               {%- endif %}
             {%- endfor %}
-            For the next 8 hours, expect {%- if (ns.high - ns.low) > 1.0 %} between {{ ns.low | round(0) }} and {{ ns.high | round(0) }}{%- else %}around {{ ((ns.high + ns.low) / 2) | round(0) }}{%- endif %}°{%- if ns.rain > 0.0 %}, up to {{ ns.rain }} millimeters of rain{%- endif %} and {%- if ns.wind > 0 %} top winds at {{ ns.wind | round(0) }} kilometers bearing {{ ns.wind_bearing }}{%- else %} no wind{%- endif %}.
+            For the next 8 hours, expect {%- if (ns.high - ns.low) > 1.0 %} between {{ ns.low | round(0) }} and {{ ns.high | round(0) }}{%- else %} around {{ ((ns.high + ns.low) / 2) | round(0) }}{%- endif %}°{%- if ns.rain > 0.0 %}, up to {{ ns.rain }} millimeters of rain{%- endif %} and {%- if ns.wind > 0 %} top winds at {{ ns.wind | round(0) }} kilometers bearing {{ ns.wind_bearing }}{%- else %} no wind{%- endif %}.
           {%- elif return_unavailable %}
             Weather services are currently unavailable.
           {%- endif %}

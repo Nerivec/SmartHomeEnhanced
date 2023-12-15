@@ -36,9 +36,6 @@ sequence:
               {% set ns.targets = ns.targets + [states('input_text.last_voice_box_triggered')] %}
             {% endif %}
             {% if speak_on_voice_boxes_with_presence %}
-              {% if is_state('binary_sensor.ha_motion', 'on') %}
-                {% set ns.targets = ns.targets + ['media_player.vlc_telnet'] %}
-              {% endif %}
               {% if is_state('binary_sensor.voice_box_motion', 'on') %}
                 {% set ns.targets = ns.targets + ['media_player.voice_box_player'] %}
               {% endif %}
@@ -167,8 +164,6 @@ fields:
       select:
         multiple: true
         options:
-          - label: HA
-            value: media_player.vlc_telnet
           - label: Voice Box
             value: media_player.voice_box_player
           - label: All

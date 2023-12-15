@@ -26,7 +26,7 @@ voice_assistant:
   auto_gain: 31dBFS
   volume_multiplier: 2.0
   use_wake_word: false
-  on_stt_end:
+  on_stt_vad_start:
     - homeassistant.service:
         service: input_text.set_value
         data:

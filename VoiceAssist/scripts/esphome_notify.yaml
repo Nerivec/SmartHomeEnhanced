@@ -23,6 +23,8 @@ sequence:
       morning: Morning sir.
       afternoon: Afternoon sir.
       evening: Evening sir.
+      last_greeted: >-
+        {{ state_attr('script.voice_get_greeted_message', 'last_triggered') | as_local }}
     response_variable: greeted_message
   - service: tts.speak
     target:

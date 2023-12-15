@@ -1,0 +1,43 @@
+alias: esphome Notify
+sequence:
+  - wait_template: "{{ is_state(target, 'idle') }}"
+    continue_on_timeout: true
+    timeout: "00:00:30"
+  - service: script.voice_get_greeted_message
+    data:
+      message: "{{ message }}"
+      skip_greeting: false
+      fallback: ", sir."
+      fallback_prepend: true
+      no_fallback_prepend_wordcount: 8
+      morning: Morning sir.
+      afternoon: Afternoon sir.
+      evening: Evening sir.
+      last_greeted: >-
+        {{ state_attr('script.voice_get_greeted_message', 'last_triggered') | as_local }}
+    response_variable: greeted_message
+  - service: tts.speak
+    target:
+      entity_id: tts.piper
+    data:
+      cache: true
+      media_player_entity_id: "{{ target }}"
+      message: "{{ greeted_message.text }}"
+  - wait_template: "{{ is_state(target, 'playing') }}"
+    continue_on_timeout: true
+    timeout: "00:00:30"
+icon: mdi:microphone-message
+mode: queued
+max: 20
+fields:
+  message:
+    selector:
+      text: null
+    name: Message
+    required: true
+  target:
+    selector:
+      text: null
+    name: Target
+    description: Entity ID for the media player to output the TTS on.
+    required: true

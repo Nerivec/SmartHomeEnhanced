@@ -92,7 +92,7 @@ voice_assistant:
   on_client_connected:
     - if:
         condition:
-          - switch.is_on: use_wake_word
+          switch.is_on: use_wake_word
         then:
           - lambda: id(vb_va).set_use_wake_word(true);
           - if:

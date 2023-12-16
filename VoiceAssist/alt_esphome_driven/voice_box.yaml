@@ -92,17 +92,15 @@ voice_assistant:
   on_client_connected:
     - if:
         condition:
-          and:
-            - switch.is_on: use_wake_word
-            - not:
-              - voice_assistant.is_running
+          - switch.is_on: use_wake_word
         then:
-          # XXX: ugly fix for on-boot endless "Error: no_wake_word - No wake word detected"
-          - voice_assistant.start_continuous
-          - delay: 0.5s
-          - voice_assistant.stop
-          - delay: 0.5s
-          - voice_assistant.start_continuous
+          - lambda: id(vb_va).set_use_wake_word(true);
+          - if:
+              condition:
+                not:
+                  - voice_assistant.is_running
+              then:
+                - voice_assistant.start_continuous
     - lambda: id(init_in_progress) = false;
   on_client_disconnected:
     - if:
@@ -123,7 +121,7 @@ switch:
           condition:
             lambda: return !id(init_in_progress);
           then:
-            - lambda: id(va).set_use_wake_word(true);
+            - lambda: id(vb_va).set_use_wake_word(true);
             - if:
                 condition:
                   not:
@@ -136,7 +134,7 @@ switch:
             lambda: return !id(init_in_progress);
           then:
             - voice_assistant.stop
-            - lambda: id(va).set_use_wake_word(false);
+            - lambda: id(vb_va).set_use_wake_word(false);
   - platform: template
     id: listen_once
     name: Listen Once

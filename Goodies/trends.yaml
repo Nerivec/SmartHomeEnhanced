@@ -1,0 +1,19 @@
+binary_sensor:
+  - platform: trend
+    sensors:
+      outside_temperature_falling:
+        friendly_name: "Outside Temperature Falling"
+        entity_id: sensor.outside_temperature
+        sample_duration: 1860
+        max_samples: 15
+        # Dropped 1°C per 30min (-1 / (60 * 30))
+        min_gradient: -0.000555556
+        device_class: cold
+      outside_temperature_rising:
+        friendly_name: "Outside Temperature Rising"
+        entity_id: sensor.outside_temperature
+        sample_duration: 1860
+        max_samples: 15
+        # Rose 1°C per 30min (1 / (60 * 30))
+        min_gradient: 0.000555556
+        device_class: heat

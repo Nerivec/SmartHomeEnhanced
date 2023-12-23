@@ -123,58 +123,26 @@ intent_script:
     speech:
       text: >-
         {{ ["The time is", "It's", ""] | random }} {{ as_timestamp(now()) | timestamp_custom('%I:%M%p') }}
-  GetDate:
-    speech:
-      text: >-
-        {{ ["The day is", "Today is", "It's"] | random }} {{ as_timestamp(now()) | timestamp_custom('%A, %B %d') }}
-  GetFutureDate:
-    speech:
-      text: >-
-        {{ ["The date will be", "It will be"] | random }} {{ as_timestamp(now() + timedelta(weeks=(weeks | int(0)), days=(days | int(0)), hours=(hours | int(0)))) | timestamp_custom('%A, %B %d') }}
+  GetDate:
+    speech:
+      text: >-
+        {{ ["The day is", "Today is", "It's"] | random }} {{ as_timestamp(now()) | timestamp_custom('%A, %B %d') }}
+  GetFutureDate:
+    speech:
+      text: >-
+        {{ ["The date will be", "It will be"] | random }} {{ as_timestamp(now() + timedelta(weeks=(weeks | int(0)), days=(days | int(0)), hours=(hours | int(0)))) | timestamp_custom('%A, %B %d') }}
   StartTimer:
     action:
-      - variables:
-          entity_id: >-
-            {{ (states.timer | selectattr('state', 'eq', 'idle')) | map(attribute='entity_id') | first }}
-      - if:
-          - condition: template
-            value_template: "{{ entity_id is defined }}"
-        then:
-          - service: "timer.start"
-            data_template:
-              duration: "{{ hours | int(0) }}:{{ minutes | int(0) }}:{{ seconds | int(0) }}"
-            target:
-              entity_id: "{{ entity_id }}"
-          - service: script.notify
-            data:
-              message: >-
-                {% set h = hours | int(0) %}
-                {% set m = minutes | int(0) %}
-                {% set s = seconds | int(0) %}
-                {%- if h > 0 %}
-                  {{ h }} {% if h > 1 %}hours{% else %}hour{% endif %}
-                {%- endif %}
-                {%- if m > 0 %}
-                  {{ m }} {% if m > 1 %}minutes{% else %}minute{% endif %}
-                {%- endif %}
-                {%- if s > 0 and h < 1 %}
-                  {{ s }} {% if s > 1 %}seconds{% else %}second{% endif %}
-                {%- endif %}
-                timer started, sir.
-              do_not_queue: true
-              no_greeting: true
-              speak_targets: []
-              speak_on_voice_boxes_with_presence: false
-              speak_on_last_voice_box_triggered: true
-        else:
-          - service: script.notify
-            data:
-              message: "All your timers are currently in use, sir."
-              do_not_queue: true
-              no_greeting: true
-              speak_targets: []
-              speak_on_voice_boxes_with_presence: false
-              speak_on_last_voice_box_triggered: true
+      - service: script.voice_start_timer
+        data:
+          hours: "{{ hours | int(0) }}"
+          minutes: "{{ minutes | int(0) }}"
+          seconds: "{{ seconds | int(0) }}"
+        response_variable: result
+      - stop: "done"
+        response_variable: result
+    speech:
+      text: "{{ action_response.text }}"
   CancelTimer:
     action:
       service: "timer.cancel"
@@ -184,46 +152,30 @@ intent_script:
       text: "{{ state_attr(entity_id, 'friendly_name') }} cancelled."
   AddToTimer:
     action:
-      - variables:
-          add_seconds: >-
-            {{ ((hours | int(0)) * 60 * 60) +  ((minutes | int(0)) * 60) + (seconds | int(0)) }}
-          duration_seconds: >-
-            {% set hms = state_attr(entity_id, 'duration').split(':') %}
-            {{ ((hms[0] | int(0)) * 60 * 60) +  ((hms[1] | int(0)) * 60) + (hms[2] | int(0)) }}
-          remaining_seconds: >-
-            {{ as_timestamp(state_attr(entity_id, 'finishes_at')) - as_timestamp(now()) }}
-      - if:
-          - condition: template
-            value_template: "{{ (remaining_seconds + add_seconds) > duration_seconds }}"
-        then:
-          - service: "timer.start"
-            data:
-              entity_id: "{{ entity_id }}"
-              duration: "{{ (remaining_seconds + add_seconds) }}"
-        else:
-          - service: "timer.change"
-            data:
-              entity_id: "{{ entity_id }}"
-              duration: "{{ add_seconds }}"
+      - service: script.voice_add_to_timer
+        data:
+          hours: "{{ hours | int(0) }}"
+          minutes: "{{ minutes | int(0) }}"
+          seconds: "{{ seconds | int(0) }}"
+          entity_id: "{{ entity_id }}"
+        response_variable: result
+      - stop: "done"
+        response_variable: result
+    speech:
+      text: "{{ action_response.text }}"
   RemoveFromTimer:
     action:
-      - variables:
-          sub_seconds: >-
-            {{ ((hours | int(0)) * 60 * 60) +  ((minutes | int(0)) * 60) + (seconds | int(0)) }}
-          remaining_seconds: >-
-            {{ as_timestamp(state_attr(entity_id, 'finishes_at')) - as_timestamp(now()) }}
-      - if:
-          - condition: template
-            value_template: "{{ (remaining_seconds - sub_seconds) < 0 }}"
-        then:
-          - service: "timer.finish"
-            data:
-              entity_id: "{{ entity_id }}"
-        else:
-          - service: "timer.change"
-            data:
-              entity_id: "{{ entity_id }}"
-              duration: "-{{ sub_seconds }}"
+      - service: script.voice_remove_from_timer
+        data:
+          hours: "{{ hours | int(0) }}"
+          minutes: "{{ minutes | int(0) }}"
+          seconds: "{{ seconds | int(0) }}"
+          entity_id: "{{ entity_id }}"
+        response_variable: result
+      - stop: "done"
+        response_variable: result
+    speech:
+      text: "{{ action_response.text }}"
   PauseTimer:
     action:
       service: "timer.pause"
@@ -254,32 +206,16 @@ intent_script:
       text: "{{ action_response.text }}"
   SetWakeUpAlarmTime:
     action:
-      - variables:
-          result:
-            alarm_time: >-
-              {%- set h = hours | int(0) %}
-              {%- set m = minutes | int(0) | string %}
-              {%- set mtime = (((h + 12) | string) if (ampm == "PM" and h != 12) else ("00" if (ampm == "AM" and h == 12) else (h | string))) + ":" + m %}
-              {%- set time = today_at(mtime) %}
-
-              {%- if time < now() %}
-                {{ time + timedelta(days=1) }}
-              {%- else %}
-                {{ time }}
-              {%- endif %}
-      - service: input_datetime.set_datetime
+      - service: script.voice_set_wake_up_alarm_time
         data:
-          entity_id: "input_datetime.wake_up_alarm_time"
-        data_template:
-          datetime: "{{ result.alarm_time }}"
-      - service: automation.turn_on
-        data:
-          entity_id: "automation.wake_up_alarm_time_triggers"
+          hours: "{{ hours | int(0) }}"
+          minutes: "{{ minutes | int(0) }}"
+          ampm: "{{ ampm }}"
+        response_variable: result
       - stop: "done"
         response_variable: result
     speech:
-      text: |-
-        Alarm set for {{ as_timestamp(action_response.alarm_time) | timestamp_custom('%I:%M%p') }}{%- if as_datetime(action_response.alarm_time) > today_at("23:59") %} tomorrow {%- endif %}.
+      text: "{{ action_response.text }}"
   CancelWakeUpAlarm:
     action:
       - service: automation.turn_off

@@ -23,11 +23,28 @@ sequence:
           - condition: template
             value_template: "{{ do_not_queue is not defined or not do_not_queue }}"
         then:
-          - service: todo.add_item
-            data:
-              item: "{{ message }}"
+          - service: todo.get_items
             target:
               entity_id: todo.queued_notifications
+            data:
+              status: needs_action
+            response_variable: queued_notif
+          - if:
+              - condition: template
+                value_template: >-
+                  {%- for summary in queued_notif['todo.queued_notifications']['items'] | map(attribute='summary') %}
+                    {%- if summary == message %}
+                      {{ false }}
+                    {%- endif %}
+                  {%- endfor %}
+
+                  {{ true }}
+            then:
+              - service: todo.add_item
+                data:
+                  item: "{{ message }}"
+                target:
+                  entity_id: todo.queued_notifications
     else:
       - variables:
           players: |-
@@ -45,7 +62,6 @@ sequence:
           {% for player in players %}
             {% if is_state(player, 'playing') %}
               {{ false }}
-              {% break %}
             {% endif %}
           {% endfor %}
 
@@ -76,7 +92,6 @@ sequence:
           {% for player in players %}
             {% if is_state(player, 'idle') %}
               {{ false }}
-              {% break %}
             {% endif %}
           {% endfor %}
 

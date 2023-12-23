@@ -1,3 +1,77 @@
+voice_add_to_timer:
+  alias: Voice - Add to Timer
+  sequence:
+  - variables:
+      add_seconds: >-
+        {{ ((hours | int(0)) * 60 * 60) +  ((minutes | int(0)) * 60) + (seconds | int(0)) }}
+      duration_seconds: >-
+        {% set hms = state_attr(entity_id, 'duration').split(':') %} {{ ((hms[0] | int(0)) * 60 * 60) +  ((hms[1] | int(0)) * 60) + (hms[2] | int(0)) }}
+      remaining_seconds: >-
+        {{ as_timestamp(state_attr(entity_id, 'finishes_at')) - as_timestamp(now()) }}
+  - variables:
+      result:
+        text: |-
+          Added
+          {%- if hours > 0 %}
+            {{ hours }} {% if hours > 1 %}hours{% else %}hour{% endif %}
+          {%- endif %}
+          {%- if minutes > 0 %}
+            {{ minutes }} {% if minutes > 1 %}minutes{% else %}minute{% endif %}
+          {%- endif %}
+          {%- if seconds > 0 and hours < 1 %}
+            {{ seconds }} {% if seconds > 1 %}seconds{% else %}second{% endif %}
+          {%- endif %}
+          to {{ state_attr(entity_id, 'friendly_name') }}
+  - if:
+    - condition: template
+      value_template: '{{ (remaining_seconds + add_seconds) > duration_seconds }}'
+    then:
+    - service: timer.start
+      data:
+        entity_id: '{{ entity_id }}'
+        duration: '{{ (remaining_seconds + add_seconds) }}'
+    else:
+    - service: timer.change
+      data:
+        entity_id: '{{ entity_id }}'
+        duration: '{{ add_seconds }}'
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:timer-plus
+  fields:
+    entity_id:
+      selector:
+        text:
+      name: Entity ID
+      required: true
+    hours:
+      selector:
+        number:
+          min: 0
+          max: 24
+          step: 1
+      name: Hours
+      required: true
+      default: 0
+    minutes:
+      selector:
+        number:
+          min: 0
+          max: 59
+          step: 1
+      name: Minutes
+      default: 0
+      required: true
+    seconds:
+      selector:
+        number:
+          min: 0
+          max: 59
+          step: 1
+      name: Seconds
+      required: true
+      default: 0
 voice_get_timer:
   alias: Voice - Get Timer
   sequence:
@@ -12,13 +86,13 @@ voice_get_timer:
             {%- set rem_m = (rem[1] | int(0)) %}
             {%- set rem_s = (rem[2] | int(0)) %}
             {%- if rem_h > 0 %}
-              {{ rem_h }} {%- if rem_h > 1 %}hours{%- else %}hour{%- endif %}
+              {{ rem_h }} {% if rem_h > 1 %}hours{% else %}hour{% endif %}
             {%- endif %}
             {%- if rem_m > 0 %}
-              {{ rem_m }} {%- if rem_m > 1 %}minutes{%- else %}minute{%- endif %}
+              {{ rem_m }} {% if rem_m > 1 %}minutes{% else %}minute{% endif %}
             {%- endif %}
             {%- if rem_s > 0 and rem_h < 1 %}
-              {{ rem_s }} {%- if rem_s > 1 %}seconds{%- else %}second{%- endif %}
+              {{ rem_s }} {% if rem_s > 1 %}seconds{% else %}second{% endif %}
             {%- endif %}
             {%- if (endts > as_timestamp(today_at("23:59:59"))) %}
               , tomorrow at {{ endts | timestamp_custom('%I:%M%p') }}
@@ -43,8 +117,7 @@ voice_list_timers:
   - variables:
       result:
         text: >-
-          {%- for t in ((states.timer | selectattr('state', 'eq', 'active')) |
-          map(attribute='entity_id') | list) %}
+          {%- for t in ((states.timer | selectattr('state', 'eq', 'active')) | map(attribute='entity_id') | list) %}
             {{ state_attr(t, 'friendly_name') }} finishes in
             {%- set endts = as_timestamp(state_attr(t, 'finishes_at')) %}
             {%- set rem = ((endts - as_timestamp(now())) | timestamp_custom('%H:%M:%S', false)).split(':') %}
@@ -52,13 +125,13 @@ voice_list_timers:
             {%- set rem_m = (rem[1] | int(0)) %}
             {%- set rem_s = (rem[2] | int(0)) %}
             {%- if rem_h > 0 %}
-              {{ rem_h }} {% if- rem_h > 1 %}hours{%- else %}hour{%- endif %}
+              {{ rem_h }} {% if rem_h > 1 %}hours{% else %}hour{% endif %}
             {%- endif %}
             {%- if rem_m > 0 %}
-              {{ rem_m }} {% if- rem_m > 1 %}minutes{%- else %}minute{%- endif %}
+              {{ rem_m }} {% if rem_m > 1 %}minutes{% else %}minute{% endif %}
             {%- endif %}
             {%- if rem_s > 0 and rem_h < 1 %}
-              {{ rem_s }} {% if- rem_s > 1 %}seconds{%- else %}second{%- endif %}
+              {{ rem_s }} {% if rem_s > 1 %}seconds{% else %}second{% endif %}
             {%- endif %}
             {%- if (endts > as_timestamp(today_at("23:59:59"))) %}
               , tomorrow at {{ endts | timestamp_custom('%I:%M%p') }}
@@ -71,3 +144,198 @@ voice_list_timers:
     response_variable: result
   mode: single
   icon: mdi:timer
+voice_remove_from_timer:
+  alias: Voice - Remove from Timer
+  sequence:
+  - variables:
+      sub_seconds: >-
+        {{ ((hours | int(0)) * 60 * 60) +  ((minutes | int(0)) * 60) + (seconds | int(0)) }}
+      remaining_seconds: >-
+        {{ as_timestamp(state_attr(entity_id, 'finishes_at')) - as_timestamp(now()) }}
+  - variables:
+      result:
+        text: |-
+          {%- if (remaining_seconds - sub_seconds) < 0 %}
+            {{ state_attr(entity_id, 'friendly_name') }} is finished
+          {%- else %}
+            Removed
+            {%- if hours > 0 %}
+              {{ hours }} {% if hours > 1 %}hours{% else %}hour{% endif %}
+            {%- endif %}
+            {%- if minutes > 0 %}
+              {{ minutes }} {% if minutes > 1 %}minutes{% else %}minute{% endif %}
+            {%- endif %}
+            {%- if seconds > 0 and hours < 1 %}
+              {{ seconds }} {% if seconds > 1 %}seconds{% else %}second{% endif %}
+            {%- endif %}
+            from {{ state_attr(entity_id, 'friendly_name') }}
+          {%- endif %}
+  - if:
+    - condition: template
+      value_template: '{{ (remaining_seconds - sub_seconds) < 0 }}'
+    then:
+    - service: timer.finish
+      data:
+        entity_id: '{{ entity_id }}'
+    else:
+    - service: timer.change
+      data:
+        entity_id: '{{ entity_id }}'
+        duration: -{{ sub_seconds }}
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:timer-minus
+  fields:
+    entity_id:
+      selector:
+        text:
+      name: Entity ID
+      required: true
+    hours:
+      selector:
+        number:
+          min: 0
+          max: 24
+          step: 1
+      name: Hours
+      required: true
+      default: 0
+    minutes:
+      selector:
+        number:
+          min: 0
+          max: 59
+          step: 1
+      name: Minutes
+      default: 0
+      required: true
+    seconds:
+      selector:
+        number:
+          min: 0
+          max: 59
+          step: 1
+      name: Seconds
+      required: true
+      default: 0
+voice_start_timer:
+  alias: Voice - Start Timer
+  sequence:
+  - variables:
+      entity_id: >-
+        {{ (states.timer | selectattr('state', 'eq', 'idle')) | map(attribute='entity_id') | first }}
+  - variables:
+      result:
+        text: |-
+          {%- if entity_id is defined and entity_id != "" %}
+            {%- if hours > 0 %}
+              {{ hours }} {% if hours > 1 %}hours{% else %}hour{% endif %}
+            {%- endif %}
+            {%- if minutes > 0 %}
+              {{ minutes }} {% if minutes > 1 %}minutes{% else %}minute{% endif %}
+            {%- endif %}
+            {%- if seconds > 0 and hours < 1 %}
+              {{ seconds }} {% if seconds > 1 %}seconds{% else %}second{% endif %}
+            {%- endif %}
+            timer started
+          {%- else %}
+            All your timers are currently in use
+          {%- endif %}
+  - if:
+    - condition: template
+      value_template: "{{ entity_id is defined and entity_id != \"\" }}"
+    then:
+    - service: timer.start
+      data_template:
+        duration: '{{ hours }}:{{ minutes }}:{{ seconds }}'
+      target:
+        entity_id: '{{ entity_id }}'
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:timer
+  fields:
+    hours:
+      selector:
+        number:
+          min: 0
+          max: 24
+          step: 1
+      name: Hours
+      required: true
+      default: 0
+    minutes:
+      selector:
+        number:
+          min: 0
+          max: 59
+          step: 1
+      name: Minutes
+      default: 0
+      required: true
+    seconds:
+      selector:
+        number:
+          min: 0
+          max: 59
+          step: 1
+      name: Seconds
+      required: true
+      default: 0
+voice_set_wake_up_alarm_time:
+  alias: Voice - Set Wake Up Alarm Time
+  sequence:
+  - variables:
+      alarm_time: >-
+        {%- set h = hours %}
+        {%- set m = minutes | string %}
+        {%- set mtime = (((h + 12) | string) if (ampm == "PM" and h != 12) else ("00" if (ampm == "AM" and h == 12) else (h | string))) + ":" + m %}
+        {%- set time = today_at(mtime) %}
+
+        {%- if time < now() %}
+          {{ time + timedelta(days=1) }}
+        {%- else %}
+          {{ time }}
+        {%- endif %}
+  - variables:
+      result:
+        text: >-
+          Alarm set for {{ as_timestamp(alarm_time) | timestamp_custom('%I:%M%p') }}{%- if as_datetime(alarm_time) > today_at("23:59") %} tomorrow {%- endif %}.
+  - service: input_datetime.set_datetime
+    data:
+      entity_id: input_datetime.wake_up_alarm_time
+    data_template:
+      datetime: '{{ alarm_time }}'
+  - service: automation.turn_on
+    data:
+      entity_id: automation.wake_up_alarm_time_triggers
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:alarm
+  fields:
+    hours:
+      selector:
+        number:
+          min: 0
+          max: 24
+          step: 1
+      name: Hours
+      required: true
+      default: 0
+    minutes:
+      selector:
+        number:
+          min: 0
+          max: 59
+          step: 1
+      name: Minutes
+      default: 0
+      required: true
+    ampm:
+      selector:
+        text:
+      name: AMPM
+      required: true
+      default: AM

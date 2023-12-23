@@ -1,0 +1,37 @@
+esphome:
+  platformio_options:
+    board_build.arduino.memory_type: qio_opi
+    board_upload.maximum_ram_size: 524288
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  flash_size: 16MB
+  # get it here https://github.com/espressif/arduino-esp32/blob/master/tools/partitions/default_16MB.csv
+  partitions: "/config/esphome/default_16MB.csv"
+  framework:
+    type: arduino
+    version: 2.0.14
+    platform_version: 6.4.0
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+# Enable logging
+# logger:
+#   level: DEBUG
+
+# debug:
+#   update_interval: 5s
+
+# sensor:
+#   - platform: debug
+#     free:
+#       name: "Heap Free"
+#     block:
+#       name: "Heap Max Block"
+#     loop_time:
+#       name: "Loop Time"
+#     psram:
+#       name: "Free PSRAM"

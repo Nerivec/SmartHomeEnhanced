@@ -37,6 +37,16 @@ sequence:
               - service: todo.add_item
                 data:
                   item: "{{ message }}"
+                  due_datetime: >-
+                    {{ now() + timedelta(minutes=(queued_timeout_min if (queued_timeout_min is defined and queued_timeout_min > 0) else 525600)) }}
+                target:
+                  entity_id: todo.queued_notifications
+            else:
+              - service: todo.update_item
+                data:
+                  item: "{{ message }}"
+                  due_datetime: >-
+                    {{ now() + timedelta(minutes=(queued_timeout_min if (queued_timeout_min is defined and queued_timeout_min > 0) else 525600)) }}
                 target:
                   entity_id: todo.queued_notifications
     else:
@@ -183,4 +193,16 @@ fields:
       speak_on_last_voice_box_triggered and speak_on_voice_boxes_with_presence
       automatically.
     required: true
+  queued_timeout_min:
+    selector:
+      number:
+        min: 0
+        max: 525600
+        step: 1
+        mode: box
+    name: Queued Timeout Min
+    description: >-
+      Queued notification timeout in minutes (if ever queued). If specified,
+      after that number of minutes, the notification will be skipped when the
+      queue is retrieved.
 max: 20

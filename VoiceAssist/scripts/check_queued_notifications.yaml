@@ -16,7 +16,7 @@ sequence:
           message: >-
             You have queued notifications.
             {%- for i in result["todo.queued_notifications"]["items"] %}
-              {{ i.summary }}.
+              {{ loop.index }}. {{ i.summary }}.
             {%- endfor %}
           no_greeting: true
           speak_targets: []
@@ -26,13 +26,8 @@ sequence:
       - service: todo.remove_item
         data:
           item: >-
-            {%- set ns = namespace(items=[]) %}
-            {%- for i in result["todo.queued_notifications"]["items"] %}
-              {%- set ns.items = ns.items + [i.summary] %}
-            {%- endfor %}
-            {{ ns.items }}
+            {{ result["todo.queued_notifications"]["items"] | map(attribute='summary') | list }}
         target:
           entity_id: todo.queued_notifications
-        enabled: true
 mode: single
 icon: mdi:speaker-message

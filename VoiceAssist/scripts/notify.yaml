@@ -33,13 +33,7 @@ sequence:
           - if:
               - condition: template
                 value_template: >-
-                  {%- for summary in queued_notif['todo.queued_notifications']['items'] | map(attribute='summary') %}
-                    {%- if summary == message %}
-                      {{ false }}
-                    {%- endif %}
-                  {%- endfor %}
-
-                  {{ true }}
+                  {{ not message in queued_notif['todo.queued_notifications']['items'] | map(attribute='summary') }}
             then:
               - service: todo.add_item
                 data:

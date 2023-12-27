@@ -18,6 +18,23 @@ globals:
     restore_value: no
     initial_value: 'true'
 
+text_sensor:
+  - platform: template
+    name: "Last STT"
+    id: last_stt
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    name: "Last TTS"
+    id: last_tts
+    entity_category: diagnostic
+    update_interval: never
+  # - platform: template
+  #   name: "Last TTS URL"
+  #   id: last_tts_url
+  #   entity_category: diagnostic
+  #   update_interval: never
+
 i2s_audio:
   - id: i2s_in
     # WS on INMP441
@@ -74,6 +91,10 @@ voice_assistant:
   auto_gain: 31dBFS
   volume_multiplier: 2.0
   use_wake_word: true
+  on_stt_end:
+    - text_sensor.template.publish:
+        id: last_stt
+        state: !lambda 'return x;'
   on_stt_vad_start:
     - homeassistant.service:
         service: input_text.set_value
@@ -81,6 +102,9 @@ voice_assistant:
           value: media_player.voice_box_player
           entity_id: input_text.last_voice_box_triggered
   on_tts_start:
+    - text_sensor.template.publish:
+        id: last_tts
+        state: !lambda 'return x;'
     - homeassistant.service:
         service: script.esphome_notify
         data:
@@ -89,6 +113,10 @@ voice_assistant:
           message: "{{ msg }}"
         variables:
           msg: return x;
+  # on_tts_end:
+  #   - text_sensor.template.publish:
+  #       id: last_tts_url
+  #       state: !lambda 'return x;'
   on_error:
     - if:
         condition:

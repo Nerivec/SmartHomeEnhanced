@@ -1,0 +1,22 @@
+alias: Voice Assist Unrecognized Intent
+description: ""
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.voice_box_assist_in_progress
+    from: "on"
+    to: "off"
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 2
+condition:
+  - condition: state
+    entity_id: sensor.voice_box_last_tts
+    state: Sorry, I couldn't understand that
+action:
+  - service: notify.persistent_notification
+    data:
+      title: Voice Assist Unrecognized Intent
+      message: "Understood: {{ states('sensor.voice_box_last_stt') }}"
+mode: single

@@ -33,6 +33,12 @@ intents:
     data:
       - sentences:
           - "unmute [in here]"
+  HereRepeatTTS:
+    data:
+      - sentences:
+          - "repeat [that]"
+          - "what did you [just] say [last]"
+          - "<what_is> that"
 lists:
   volume:
     range:

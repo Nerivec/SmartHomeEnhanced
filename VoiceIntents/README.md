@@ -32,6 +32,9 @@ Direct (quicker/easier) control of "where you currently are" through device area
 - Text `input_text.last_voice_box_triggered`
   - Used to keep track of last activated device (in the form of the associated media player entity ID) for various needs (like area last triggered, quick volume control, etc)
   - See `VoiceAssist` folder
+- For `HereRepeatTTS`: ESPHome device(s) that records the last STT and TTS
+  - Used to allow replay of last TTS, and to easily keep track of what it understood (in case you want an automation to deal with unrecognized intents, see `Goodies` folder)
+  - See `VoiceAssist` folder
 
 
 

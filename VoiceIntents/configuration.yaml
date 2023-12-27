@@ -45,6 +45,12 @@ intent_script:
       data:
         entity_id: "{{ states('input_text.last_voice_box_triggered') }}"
         is_volume_muted: "false"
+  HereRepeatTTS:
+    speech:
+      text: >-
+        {%- set last_vb_name = states('input_text.last_voice_box_triggered') | replace('media_player.', '') | replace('_player', '') %}
+        {%- set last_tts_sensor = 'sensor.' + last_vb_name + '_last_tts' %}
+        {{ states(last_tts_sensor) if has_value(last_tts_sensor) else "Sorry, I can't do that." }}
   GetWeather:
     action:
       - service: script.voice_get_climate_outside

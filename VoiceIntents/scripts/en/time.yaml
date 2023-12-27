@@ -335,7 +335,10 @@ voice_set_wake_up_alarm_time:
       required: true
     ampm:
       selector:
-        text:
+        select:
+          options:
+            - AM
+            - PM
       name: AMPM
       required: true
       default: AM

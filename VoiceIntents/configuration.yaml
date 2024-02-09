@@ -137,6 +137,10 @@ intent_script:
     speech:
       text: >-
         {{ ["The date will be", "It will be"] | random }} {{ as_timestamp(now() + timedelta(weeks=(weeks | int(0)), days=(days | int(0)), hours=(hours | int(0)))) | timestamp_custom('%A, %B %d') }}
+  GetPastDate:
+    speech:
+      text: >-
+        {{ ["The date was", "It was"] | random }} {{ as_timestamp(now() - timedelta(weeks=(weeks | int(0)), days=(days | int(0)), hours=(hours | int(0)))) | timestamp_custom('%A, %B %d') }}
   StartTimer:
     action:
       - service: script.voice_start_timer
@@ -222,6 +226,17 @@ intent_script:
         response_variable: result
     speech:
       text: "{{ action_response.text }}"
+  SetWakeUpAlarmTimeOffset:
+    action:
+      - service: script.voice_set_wake_up_alarm_time_offset
+        data:
+          hours: "{{ hours | int(0) }}"
+          minutes: "{{ minutes | int(0) }}"
+        response_variable: result
+      - stop: "done"
+        response_variable: result
+    speech:
+      text: "{{ action_response.text }}"
   CancelWakeUpAlarm:
     action:
       - service: automation.turn_off
@@ -237,4 +252,21 @@ intent_script:
           Yes, your alarm is set for {{ as_timestamp(alarm_time) | timestamp_custom('%I:%M%p') }}{%- if (as_datetime(alarm_time) | as_local) > today_at("23:59") %} tomorrow {%- endif %}.
         {%- else %}
           No, your alarm is not set.
+        {%- endif %}
+  Calculate:
+    speech:
+      text: |-
+        {{ ["", "That's", "The answer is"] | random }} 
+        {%- if operator == "+" %}
+          {{ x + y }}
+        {%- elif operator == "-" %}
+          {{ x - y }}
+        {%- elif operator == "*" %}
+          {{ x * y }}
+        {%- elif operator == "/" %}
+          {%- if y != 0 %}
+            {{ x / y }}
+          {%- else %}
+            not possible
+          {%- endif %}
         {%- endif %}

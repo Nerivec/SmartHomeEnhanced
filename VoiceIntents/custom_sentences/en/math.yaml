@@ -1,0 +1,46 @@
+language: "en"
+intents:
+  Calculate:
+    data:
+      - sentences:
+          - "(calc[ulate]|compute|count) {x} {operator} {y}"
+      - sentences:
+          - "add {x} (+|plus|to) {y}"
+        slots:
+          operator: "+"
+      - sentences:
+          - "subtract {x} (-|minus) {y}"
+          - "subtract {y} from {x}"
+        slots:
+          operator: "-"
+      - sentences:
+          - "multiply {x} by {y}"
+        slots:
+          operator: "*"
+      - sentences:
+          - "divide {x} by {y}"
+        slots:
+          operator: "/"
+lists:
+  operator:
+    values:
+      - in: "(+|plus)"
+        out: "+"
+      - in: "(-|minus)"
+        out: "-"
+      - in: "(*|times)"
+        out: "*"
+      - in: "(/|divided by)"
+        out: "/"
+  x:
+    range:
+      from: 0
+      to: 1000
+      digits: true
+      words: true
+  y:
+    range:
+      from: 0
+      to: 1000
+      digits: true
+      words: true

@@ -1,5 +1,44 @@
 # Voice Intents
 
+Full list of intents (using accompanying `scripts` to handle some of them, and requirements as below): 
+
+- HereGetTemperature
+- HereGetHumidity
+- HereSetVolume
+- HereVolumeUp
+- HereVolumeDown
+- HereMuteVolume
+- HereUnmuteVolume
+- HereRepeatTTS
+- GetWeather
+- GetForecast
+- GetForecastTomorrow
+- ReportClimate
+- GetSolarProduction
+- SleepModeOn
+- SleepModeOff
+- AreaManualModeOn
+- AreaManualModeOff
+- GetTime
+- GetDate
+- GetFutureDate
+- GetPastDate
+- StartTimer
+- CancelTimer
+- AddToTimer
+- RemoveFromTimer
+- PauseTimer
+- ResumeTimer
+- ListTimers
+- GetTimer
+- SetWakeUpAlarmTime
+- SetWakeUpAlarmTimeOffset
+- CancelWakeUpAlarm
+- IsWakeUpAlarmSet
+- Calculate
+
+There are too many variations on sentences to list them here, you will have to check each intent to identify how to trigger them properly. Details on sentence templates can be found [here](https://github.com/home-assistant/hassil?tab=readme-ov-file#sentence-templates).
+
 # Climate
 
 ### Requirements
@@ -32,10 +71,18 @@ Direct (quicker/easier) control of "where you currently are" through device area
 - Text `input_text.last_voice_box_triggered`
   - Used to keep track of last activated device (in the form of the associated media player entity ID) for various needs (like area last triggered, quick volume control, etc)
   - See `VoiceAssist` folder
-- For `HereRepeatTTS`: ESPHome device(s) that records the last STT and TTS
+- For `HereRepeatTTS`: ESPHome device(s) that records the last STT and TTS with `text_sensor`s
   - Used to allow replay of last TTS, and to easily keep track of what it understood (in case you want an automation to deal with unrecognized intents, see `Goodies` folder)
   - See `VoiceAssist` folder
 
+
+# Math
+
+_Count from 0 to 1000 ;-)_
+
+Supports add, subtract, divide, multiply, with range for each number in [0-1000].
+
+> WARNING: You can adjust the range, but negative numbers seem to not be supported at the moment, and it is not optimized for large ranges; very large ones are likely to crash the pipeline (at least; depending on your machine).
 
 
 # Modes

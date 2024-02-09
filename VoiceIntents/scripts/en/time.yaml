@@ -342,3 +342,42 @@ voice_set_wake_up_alarm_time:
       name: AMPM
       required: true
       default: AM
+voice_set_wake_up_alarm_time_offset:
+  alias: Voice - Set Wake Up Alarm Time Offset
+  sequence:
+  - variables:
+      alarm_time: '{{ now() + timedelta(hours=hours, minutes=minutes) }}'
+  - variables:
+      result:
+        text: Alarm set for {{ as_timestamp(alarm_time) | timestamp_custom('%I:%M%p') }}{%- if as_datetime(alarm_time) > today_at("23:59") %} tomorrow {%- endif %}.
+  - service: input_datetime.set_datetime
+    data:
+      entity_id: input_datetime.wake_up_alarm_time
+    data_template:
+      datetime: '{{ alarm_time }}'
+  - service: automation.turn_on
+    data:
+      entity_id: automation.wake_up_alarm_time_triggers
+  - stop: done
+    response_variable: result
+  mode: single
+  icon: mdi:alarm
+  fields:
+    hours:
+      selector:
+        number:
+          min: 0
+          max: 24
+          step: 1
+      name: Hours
+      required: true
+      default: 0
+    minutes:
+      selector:
+        number:
+          min: 0
+          max: 59
+          step: 1
+      name: Minutes
+      default: 0
+      required: true

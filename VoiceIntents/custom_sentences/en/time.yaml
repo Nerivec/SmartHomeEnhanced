@@ -4,95 +4,140 @@ intents:
     data:
       - sentences:
           - "<what_is> [the] time"
-  GetDate:
-    data:
-      - sentences:
-          - "<what_is> [the] (day|date)"
-          - "<what_is> today's date"
-          - "what day is today"
-  GetFutureDate:
-    data:
-      - sentences:
-          - "what will be [the] date [in] ({spelled_numbers:weeks}|{weeks}) week[s] [and] ({spelled_numbers:days}|{days}) day[s] [and] ({spelled_numbers:hours}|{hours}) hour[s] [from (now|today)]"
-      - sentences:
-          - "what will be [the] date [in] ({spelled_numbers:days}|{days}) day[s] [and] ({spelled_numbers:hours}|{hours}) hour[s] [from (now|today)]"
-        slots:
-          weeks: 0
-      - sentences:
-          - "what will be [the] date [in] ({spelled_numbers:weeks}|{weeks}) week[s] [and] ({spelled_numbers:days}|{days}) day[s] [from (now|today)]"
-        slots:
-          hours: 0
-      - sentences:
-          - "what will be [the] date [in] ({spelled_numbers:weeks}|{weeks}) week[s] [and] ({spelled_numbers:hours}|{hours}) hour[s] [from (now|today)]"
-        slots:
-          days: 0
-      - sentences:
-          - "what will be [the] date [in] ({spelled_numbers:weeks}|{weeks}) week[s] [from (now|today)]"
-        slots:
-          days: 0
-          hours: 0
-      - sentences:
-          - "what will be [the] date [in] ({spelled_numbers:days}|{days}) day[s] [from (now|today)]"
-        slots:
-          weeks: 0
-          hours: 0
-      - sentences:
-          - "what will be [the] date [in] ({spelled_numbers:hours}|{hours}) hour[s] [from (now|today)]"
-        slots:
-          weeks: 0
-          days: 0
+  GetDate:
+    data:
+      - sentences:
+          - "<what_is> [the] (day|date)"
+          - "<what_is> today's date"
+          - "what day is today"
+  GetFutureDate:
+    data:
+      - sentences:
+          - "what will be [the] date [in] {weeks} week[s] [and] {days} day[s] [and] {hours} hour[s] [from (now|today)]"
+          - "what date will it be [in] {weeks} week[s] [and] {days} day[s] [and] {hours} hour[s] [from (now|today)]"
+      - sentences:
+          - "what will be [the] date [in] {days} day[s] [and] {hours} hour[s] [from (now|today)]"
+          - "what date will it be [in] {days} day[s] [and] {hours} hour[s] [from (now|today)]"
+        slots:
+          weeks: 0
+      - sentences:
+          - "what will be [the] date [in] {weeks} week[s] [and] {days} day[s] [from (now|today)]"
+          - "what date will it be [in] {weeks} week[s] [and] {days} day[s] [from (now|today)]"
+        slots:
+          hours: 0
+      - sentences:
+          - "what will be [the] date [in] {weeks} week[s] [and] {hours} hour[s] [from (now|today)]"
+          - "what date will it be [in] {weeks} week[s] [and] {hours} hour[s] [from (now|today)]"
+        slots:
+          days: 0
+      - sentences:
+          - "what will be [the] date [in] {weeks} week[s] [from (now|today)]"
+          - "what date will it be [in] {weeks} week[s] [from (now|today)]"
+        slots:
+          days: 0
+          hours: 0
+      - sentences:
+          - "what will be [the] date [in] {days} day[s] [from (now|today)]"
+          - "what date will it be [in] {days} day[s] [from (now|today)]"
+        slots:
+          weeks: 0
+          hours: 0
+      - sentences:
+          - "what will be [the] date [in] {hours} hour[s] [from (now|today)]"
+          - "what date will it be [in] {hours} hour[s] [from (now|today)]"
+        slots:
+          weeks: 0
+          days: 0
+  GetPastDate:
+    data:
+      - sentences:
+          - "what was [the] date {weeks} week[s] [and] {days} day[s] [and] {hours} hour[s] [from (now|today)] ago"
+          - "what date was it be {weeks} week[s] [and] {days} day[s] [and] {hours} hour[s] [from (now|today)] ago"
+      - sentences:
+          - "what was [the] date {days} day[s] [and] {hours} hour[s] [from (now|today)] ago"
+          - "what date was it be {days} day[s] [and] {hours} hour[s] [from (now|today)] ago"
+        slots:
+          weeks: 0
+      - sentences:
+          - "what was [the] date {weeks} week[s] [and] {days} day[s] [from (now|today)] ago"
+          - "what date was it be {weeks} week[s] [and] {days} day[s] [from (now|today)] ago"
+        slots:
+          hours: 0
+      - sentences:
+          - "what was [the] date {weeks} week[s] [and] {hours} hour[s] [from (now|today)] ago"
+          - "what date was it be {weeks} week[s] [and] {hours} hour[s] [from (now|today)] ago"
+        slots:
+          days: 0
+      - sentences:
+          - "what was [the] date {weeks} week[s] [from (now|today)] ago"
+          - "what date was it be {weeks} week[s] [from (now|today)] ago"
+        slots:
+          days: 0
+          hours: 0
+      - sentences:
+          - "what was [the] date {days} day[s] [from (now|today)] ago"
+          - "what date was it be {days} day[s] [from (now|today)] ago"
+        slots:
+          weeks: 0
+          hours: 0
+      - sentences:
+          - "what was [the] date {hours} hour[s] [from (now|today)] ago"
+          - "what date was it be {hours} hour[s] [from (now|today)] ago"
+        slots:
+          weeks: 0
+          days: 0
   StartTimer:
     data:
       - sentences:
-          - "(set|start) [(the|a|an)] ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] timer"
-          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s]"
+          - "(set|start) [(the|a|an)] {hours} hour[s] [and] {minutes} minute[s] [and] {seconds} second[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] {hours} hour[s] [and] {minutes} minute[s] [and] {seconds} second[s]"
       - sentences:
-          - "(set|start) [(the|a|an)] ({spelled_numbers:hours}|{hours}) hour[s] timer"
-          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:hours}|{hours}) hour[s]"
+          - "(set|start) [(the|a|an)] {hours} hour[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] {hours} hour[s]"
         slots:
           domain: "timer"
           seconds: 0
           minutes: 0
       - sentences:
-          - "(set|start) [(the|a|an)] ({spelled_numbers:minutes}|{minutes}) minute[s] timer"
-          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:minutes}|{minutes}) minute[s]"
+          - "(set|start) [(the|a|an)] {minutes} minute[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] {minutes} minute[s]"
         slots:
           domain: "timer"
           seconds: 0
           hours: 0
       - sentences:
-          - "(set|start) [(the|a|an)] ({spelled_numbers:seconds}|{seconds}) second[s] timer"
-          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:seconds}|{seconds}) second[s]"
+          - "(set|start) [(the|a|an)] {seconds} second[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] {seconds} second[s]"
         slots:
           domain: "timer"
           minutes: 0
           hours: 0
       - sentences:
-          - "(set|start) [(the|a|an)] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] timer"
-          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s]"
+          - "(set|start) [(the|a|an)] {minutes} minute[s] [and] {seconds} second[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] {minutes} minute[s] [and] {seconds} second[s]"
         slots:
           domain: "timer"
           hours: 0
       - sentences:
-          - "(set|start) [(the|a|an)] ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] timer"
-          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s]"
+          - "(set|start) [(the|a|an)] {hours} hour[s] [and] {minutes} minute[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] {hours} hour[s] [and] {minutes} minute[s]"
         slots:
           domain: "timer"
           seconds: 0
       - sentences:
-          - "(set|start) [(the|a|an)] ({spelled_numbers:minutes}|{minutes}) minute[s] and [a] half timer"
-          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:minutes}|{minutes}) minute[s] and [a] half"
-          - "(set|start) [(the|a|an)] ({spelled_numbers:minutes}|{minutes}) and [a] half minute[s] timer"
-          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:minutes}|{minutes}) and [a] half minute[s]"
+          - "(set|start) [(the|a|an)] {minutes} minute[s] and [a] half timer"
+          - "(set|start) [(the|a)] timer [(for|of)] {minutes} minute[s] and [a] half"
+          - "(set|start) [(the|a|an)] {minutes} and [a] half minute[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] {minutes} and [a] half minute[s]"
         slots:
           domain: "timer"
           seconds: 30
           hours: 0
       - sentences:
-          - "(set|start) [(the|a|an)] ({spelled_numbers:hours}|{hours}) hour[s] and [a] half timer"
-          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:hours}|{hours}) hour[s] and [a] half"
-          - "(set|start) [(the|a|an)] ({spelled_numbers:hours}|{hours}) and [a] half hour[s] timer"
-          - "(set|start) [(the|a)] timer [(for|of)] ({spelled_numbers:hours}|{hours}) and [a] half hour[s]"
+          - "(set|start) [(the|a|an)] {hours} hour[s] and [a] half timer"
+          - "(set|start) [(the|a)] timer [(for|of)] {hours} hour[s] and [a] half"
+          - "(set|start) [(the|a|an)] {hours} and [a] half hour[s] timer"
+          - "(set|start) [(the|a)] timer [(for|of)] {hours} and [a] half hour[s]"
         slots:
           domain: "timer"
           seconds: 0
@@ -106,45 +151,45 @@ intents:
   AddToTimer:
     data:
       - sentences:
-          - "add ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] [to] (timer {entity_id}|{entity_id} timer)"
+          - "add {hours} hour[s] [and] {minutes} minute[s] [and] {seconds} second[s] [to] (timer {entity_id}|{entity_id} timer)"
       - sentences:
-          - "add ({spelled_numbers:hours}|{hours}) hour[s] [to] (timer {entity_id}|{entity_id} timer)"
+          - "add {hours} hour[s] [to] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           seconds: 0
           minutes: 0
       - sentences:
-          - "add ({spelled_numbers:minutes}|{minutes}) minute[s] [to] (timer {entity_id}|{entity_id} timer)"
+          - "add {minutes} minute[s] [to] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           seconds: 0
           hours: 0
       - sentences:
-          - "add ({spelled_numbers:seconds}|{seconds}) second[s] [to] (timer {entity_id}|{entity_id} timer)"
+          - "add {seconds} second[s] [to] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           minutes: 0
           hours: 0
       - sentences:
-          - "add ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] [to] (timer {entity_id}|{entity_id} timer)"
+          - "add {minutes} minute[s] [and] {seconds} second[s] [to] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           hours: 0
       - sentences:
-          - "add ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [to] (timer {entity_id}|{entity_id} timer)"
+          - "add {hours} hour[s] [and] {minutes} minute[s] [to] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           seconds: 0
       - sentences:
-          - "add ({spelled_numbers:minutes}|{minutes}) minute[s] and [a] half [to] (timer {entity_id}|{entity_id} timer)"
-          - "add ({spelled_numbers:minutes}|{minutes}) and [a] half minute[s] [to] (timer {entity_id}|{entity_id} timer)"
+          - "add {minutes} minute[s] and [a] half [to] (timer {entity_id}|{entity_id} timer)"
+          - "add {minutes} and [a] half minute[s] [to] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           seconds: 30
           hours: 0
       - sentences:
-          - "add ({spelled_numbers:hours}|{hours}) hour[s] and [a] half [to] (timer {entity_id}|{entity_id} timer)"
-          - "add ({spelled_numbers:hours}|{hours}) and [a] half hour[s] [to] (timer {entity_id}|{entity_id} timer)"
+          - "add {hours} hour[s] and [a] half [to] (timer {entity_id}|{entity_id} timer)"
+          - "add {hours} and [a] half hour[s] [to] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           seconds: 0
@@ -152,45 +197,45 @@ intents:
   RemoveFromTimer:
     data:
       - sentences:
-          - "(remove|subtract) ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) {hours} hour[s] [and] {minutes} minute[s] [and] {seconds} second[s] [from] (timer {entity_id}|{entity_id} timer)"
       - sentences:
-          - "(remove|subtract) ({spelled_numbers:hours}|{hours}) hour[s] [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) {hours} hour[s] [from] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           seconds: 0
           minutes: 0
       - sentences:
-          - "(remove|subtract) ({spelled_numbers:minutes}|{minutes}) minute[s] [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) {minutes} minute[s] [from] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           seconds: 0
           hours: 0
       - sentences:
-          - "(remove|subtract) ({spelled_numbers:seconds}|{seconds}) second[s] [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) {seconds} second[s] [from] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           minutes: 0
           hours: 0
       - sentences:
-          - "(remove|subtract) ({spelled_numbers:minutes}|{minutes}) minute[s] [and] ({spelled_numbers:seconds}|{seconds}) second[s] [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) {minutes} minute[s] [and] {seconds} second[s] [from] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           hours: 0
       - sentences:
-          - "(remove|subtract) ({spelled_numbers:hours}|{hours}) hour[s] [and] ({spelled_numbers:minutes}|{minutes}) minute[s] [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) {hours} hour[s] [and] {minutes} minute[s] [from] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           seconds: 0
       - sentences:
-          - "(remove|subtract) ({spelled_numbers:minutes}|{minutes}) minute[s] and [a] half [from] (timer {entity_id}|{entity_id} timer)"
-          - "(remove|subtract) ({spelled_numbers:minutes}|{minutes}) and [a] half minute[s] [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) {minutes} minute[s] and [a] half [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) {minutes} and [a] half minute[s] [from] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           seconds: 30
           hours: 0
       - sentences:
-          - "(remove|subtract) ({spelled_numbers:hours}|{hours}) hour[s] and [a] half [from] (timer {entity_id}|{entity_id} timer)"
-          - "(remove|subtract) ({spelled_numbers:hours}|{hours}) and [a] half hour[s] [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) {hours} hour[s] and [a] half [from] (timer {entity_id}|{entity_id} timer)"
+          - "(remove|subtract) {hours} and [a] half hour[s] [from] (timer {entity_id}|{entity_id} timer)"
         slots:
           domain: "timer"
           seconds: 0
@@ -224,24 +269,45 @@ intents:
   SetWakeUpAlarmTime:
     data:
       - sentences:
-          - "wake me up at {hours} {minutes} [in the] {ampm}"
+          - "wake [me] up at {hours} {minutes} [in the] {ampm}"
           - "set [my] alarm (at|for) {hours} {minutes} [in the] {ampm}"
+          - "change [my] alarm to {hours} {minutes} [in the] {ampm}"
       - sentences:
-          - "wake me up at {hours} {minutes}"
+          - "wake [me] up at {hours} {minutes}"
           - "set [my] alarm (at|for) {hours} {minutes}"
+          - "change [my] alarm to {hours} {minutes}"
         slots:
           ampm: "AM"
       - sentences:
-          - "wake me up at {hours} [in the] {ampm}"
+          - "wake [me] up at {hours} [in the] {ampm}"
           - "set [my] alarm (at|for) {hours} [in the] {ampm}"
+          - "change [my] alarm to {hours} [in the] {ampm}"
         slots:
           minutes: 0
       - sentences:
-          - "wake me up at {hours}"
+          - "wake [me] up at {hours}"
           - "set [my] alarm (at|for) {hours}"
+          - "change [my] alarm to {hours}"
         slots:
           minutes: 0
           ampm: "AM"
+  SetWakeUpAlarmTimeOffset:
+    data:
+      - sentences:
+          - "wake [me] up in {hours} hour[s] [and] {minutes} minute(s)"
+          - "set [my] alarm [to] {hours} hour(s) [and] {minutes} minute(s) [from now]"
+      - sentences:
+          - "wake [me] up in {hours} hour[s]"
+          - "set [my] alarm [to] {hours} hour(s) [from now]"
+        slots:
+          minutes: 0
+      - sentences:
+          - "wake [me] up in {hours} hour[s] and [a] half"
+          - "wake [me] up in {hours} and [a] half hour[s]"
+          - "set [my] alarm [to] {hours} hour(s) and [a] half [from now]"
+          - "set [my] alarm [to] {hours} and [a] half hour(s) [from now]"
+        slots:
+          minutes: 30
   CancelWakeUpAlarm:
     data:
       - sentences:
@@ -263,45 +329,35 @@ lists:
     range:
       from: 0
       to: 59
+      digits: true
+      words: true
   minutes:
     range:
       from: 0
       to: 59
+      digits: true
+      words: true
   hours:
     range:
       from: 0
       to: 24
-  days:
-    range:
-      from: 0
-      to: 1000
-  weeks:
-    range:
-      from: 0
-      to: 1000
+      digits: true
+      words: true
+  days:
+    range:
+      from: 0
+      to: 1000
+      digits: true
+      words: true
+  weeks:
+    range:
+      from: 0
+      to: 1000
+      digits: true
+      words: true
   ampm:
     values:
       - in: "(am|a.m|a.m.|morning)"
         out: "AM"
       - in: "(pm|p.m|p.m.|afternoon|evening)"
         out: "PM"
-  spelled_numbers:
-    values:
-      - in: one
-        out: 1
-      - in: two
-        out: 2
-      - in: three
-        out: 3
-      - in: four
-        out: 4
-      - in: five
-        out: 5
-      - in: six
-        out: 6
-      - in: seven
-        out: 7
-      - in: eight
-        out: 8
-      - in: nine
-        out: 9

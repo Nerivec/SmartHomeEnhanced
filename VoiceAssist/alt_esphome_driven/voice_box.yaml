@@ -74,6 +74,12 @@ media_player:
             switch.is_on: use_wake_word
           then:
             - voice_assistant.stop
+    on_announcement:
+      - if:
+          condition:
+            switch.is_on: use_wake_word
+          then:
+            - voice_assistant.stop
     on_idle:
       - if:
           condition:
